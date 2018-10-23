@@ -126,7 +126,7 @@ class TestTap(unittest.TestCase):
         tableSchema = "public"
         tableName = "table1"
         fullQualifiedTableName = tableSchema + "." + tableName
-        tableRequest = "tables?tables=" + fullQualifiedTableName
+        tableRequest = "tables"
         connHandler.set_response(tableRequest, responseLoadTable)
 
         with pytest.raises(Exception):
