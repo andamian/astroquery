@@ -11,18 +11,20 @@ import os
 import sys
 import getpass
 
+
 class AuthMethod(object):
     """
     Class to be inherited by all the authentication method classes
     """
     def __init__(self, auth_type):
-      self.__authMethod = auth_type
+        self.__authMethod = auth_type
 
     def get_auth_method(self):
         """
         Returns either 'anon', 'netrc' or 'certificate'
         """
         return self.__authMethod
+
 
 class CertAuthMethod(AuthMethod):
     """
@@ -33,20 +35,21 @@ class CertAuthMethod(AuthMethod):
         Initialize
 
         Parameter
-        certificate : location of file of certificate to use 
+        certificate : location of file of certificate to use
                        for authentication
-        """       
+        """
         super(CertAuthMethod, self).__init__('certificate')
         if certificate is not None:
             assert certificate is not '' and os.path.isfile(certificate),\
                 'Certificate file {} not found'.format(certificate)
             self._certificate = certificate
-  
+
     def get_certificate(self):
         """
         Returns the location of the certificate
         """
         return self._certificate
+
 
 class NetrcAuthMethod(AuthMethod):
     """
@@ -57,12 +60,12 @@ class NetrcAuthMethod(AuthMethod):
         Initialize
 
         Parameter
-        filename : location of the file to use, default is None 
+        filename : location of the file to use, default is None
                    which looks in the home directory for a file
                    called '.netrc'
         """
         super(NetrcAuthMethod, self).__init__('netrc')
-        self._username=username
+        self._username = username
         self._hosts_auth = {}
         if username is None:
             hosts = netrclib.netrc(filename).hosts
@@ -71,7 +74,7 @@ class NetrcAuthMethod(AuthMethod):
                 self._hosts_auth[host_name] = (hosts[host_name][0],
                                                hosts[host_name][2])
         else:
-            self._netrc=None
+            self._netrc = None
 
     def get_auth(self, realm):
         """
@@ -109,8 +112,8 @@ class AnonAuthMethod(AuthMethod):
     Anonymous Authentication Method
     """
     def __init__(self):
-       """
-       Inizialize
-       """
-       super(AnonAuthMethod, self).__init__('anon')
+        """
+        Inizialize
+        """
+        super(AnonAuthMethod, self).__init__('anon')
 

@@ -10,6 +10,7 @@ import unittest
 import os
 from astroquery.cadc.tap.model.tapcolumn import TapColumn
 
+
 def data_path(filename):
     data_dir = os.path.join(os.path.dirname(__file__), 'data')
     return os.path.join(data_dir, filename)
@@ -57,10 +58,11 @@ class TestTableColumn(unittest.TestCase):
             "Invalid unit, expected: %s, found: %s" % (unit,
                                                        c.get_unit())
         assert c.get_description() == description, \
-            "Invalid description, expected: %s, found: %s" % (description,
-                                                              c.get_description())
+            "Invalid description, expected: %s, found: %s" % \
+            (description, c.get_description())
 
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
+

@@ -10,7 +10,7 @@ import os
 import pytest
 
 from astroquery.cadc.core import CadcTAP
-from astroquery.cadc import auth 
+from astroquery.cadc import auth
 from astroquery.cadc.tests.DummyTapHandler import DummyTapHandler
 from astroquery.cadc.tap.conn.tests.DummyConnHandler import DummyConnHandler
 from astroquery.cadc.tap.conn.tests.DummyResponse import DummyResponse
@@ -30,8 +30,8 @@ def data_path(filename):
 class TestTap(unittest.TestCase):
 
     def test_get_tables(self):
-        anon=auth.AnonAuthMethod()
-        cert=auth.CertAuthMethod(certificate=data_path('certificate.pem'))
+        anon = auth.AnonAuthMethod()
+        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         # default parameters
@@ -51,8 +51,8 @@ class TestTap(unittest.TestCase):
         dummyTapHandler.check_call('get_tables', parameters)
 
     def test_get_table(self):
-        anon=auth.AnonAuthMethod()
-        cert=auth.CertAuthMethod(certificate=data_path('certificate.pem'))
+        anon = auth.AnonAuthMethod()
+        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         # default parameters
@@ -72,8 +72,8 @@ class TestTap(unittest.TestCase):
         dummyTapHandler.check_call('get_table', parameters)
 
     def test_run_query_sync(self):
-        anon=auth.AnonAuthMethod()
-        cert=auth.CertAuthMethod(certificate=data_path('certificate.pem'))
+        anon = auth.AnonAuthMethod()
+        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         query = "query"
@@ -125,8 +125,8 @@ class TestTap(unittest.TestCase):
         dummyTapHandler.check_call('run_query', parameters)
 
     def test_run_query_async(self):
-        anon=auth.AnonAuthMethod()
-        cert=auth.CertAuthMethod(certificate=data_path('certificate.pem'))
+        anon = auth.AnonAuthMethod()
+        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         query = "query"
@@ -178,8 +178,8 @@ class TestTap(unittest.TestCase):
         dummyTapHandler.check_call('run_query', parameters)
 
     def test_load_async_job(self):
-        anon=auth.AnonAuthMethod()
-        cert=auth.CertAuthMethod(certificate=data_path('certificate.pem'))
+        anon = auth.AnonAuthMethod()
+        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         jobid = '123'
@@ -199,8 +199,8 @@ class TestTap(unittest.TestCase):
         dummyTapHandler.check_call('load_async_job', parameters)
 
     def test_list_async_jobs(self):
-        anon=auth.AnonAuthMethod()
-        cert=auth.CertAuthMethod(certificate=data_path('certificate.pem'))
+        anon = auth.AnonAuthMethod()
+        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         # default parameters
@@ -217,8 +217,8 @@ class TestTap(unittest.TestCase):
         dummyTapHandler.check_call('list_async_jobs', parameters)
 
     def test_save_results(self):
-        anon=auth.AnonAuthMethod()
-        cert=auth.CertAuthMethod(certificate=data_path('certificate.pem'))
+        anon = auth.AnonAuthMethod()
+        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         job = '123'
@@ -240,3 +240,4 @@ class TestTap(unittest.TestCase):
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
+

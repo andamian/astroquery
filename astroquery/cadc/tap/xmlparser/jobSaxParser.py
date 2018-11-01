@@ -30,6 +30,7 @@ VALID_ITEMS = [UWS_JOBID, UWS_RUNID, UWS_OWNERID, UWS_PHASE, UWS_QUOTE,
                UWS_EXECUTION_DURATION, UWS_DESTRUCTION, UWS_LOCATIONID,
                UWS_NAME, UWS_PARAMETER]
 
+
 class JobSaxParser(xml.sax.ContentHandler):
     '''
     classdocs
@@ -128,3 +129,4 @@ class JobSaxParser(xml.sax.ContentHandler):
             self.__job.set_destruction(value)
         elif UWS_PARAMETER == nameLower:
             self.__job.set_parameter(self.__paramKey, value)
+

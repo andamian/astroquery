@@ -13,9 +13,11 @@ from astroquery.cadc import auth
 from astroquery.cadc.tap.conn.tapconn import TapConn
 from astroquery.cadc.tap.conn.tests.DummyConn import DummyConn
 
+
 def data_path(filename):
     data_dir = os.path.join(os.path.dirname(__file__), 'data')
     return os.path.join(data_dir, filename)
+
 
 class ConnTest(unittest.TestCase):
     def test_get_anon(self):
@@ -42,8 +44,8 @@ class ConnTest(unittest.TestCase):
         hostUrlSecure = host + ":" + str(connPortSsl) + "/" + serverContext \
             + "/" + tapContext + "/"
         assert tap.get_host_url_secure() == hostUrlSecure, \
-            "Tap host secure. Expected %s, found %s" % (hostUrlSecure,
-                                                        tap.get_host_url_secure())
+            "Tap host secure. Expected %s, found %s" % \
+            (hostUrlSecure, tap.get_host_url_secure())
         # GET
         subContext = "testSubContextGet"
         context = "/" + serverContext + "/" + tapContext + "/" + subContext
@@ -53,9 +55,11 @@ class ConnTest(unittest.TestCase):
         assert r.get_method() == 'GET', \
             "Request method. Expected %s, found %s" % ('GET', r.get_method())
         assert r.get_context() == context, \
-            "Request context. Expected %s, found %s" % (context, r.get_context())
+            "Request context. Expected %s, found %s" % \
+            (context, r.get_context())
         assert r.get_body() is None, \
-            "Request body. Expected %s, found %s" % ('None', str(r.get_body()))
+            "Request body. Expected %s, found %s" % \
+            ('None', str(r.get_body()))
 
     def test_get_netrc(self):
         netrc = auth.NetrcAuthMethod(filename=data_path('netrc'))
@@ -81,8 +85,8 @@ class ConnTest(unittest.TestCase):
         hostUrlSecure = host + ":" + str(connPortSsl) + "/" + serverContext \
             + "/" + tapContext + "/"
         assert tap.get_host_url_secure() == hostUrlSecure, \
-            "Tap host secure. Expected %s, found %s" % (hostUrlSecure,
-                                                        tap.get_host_url_secure())
+            "Tap host secure. Expected %s, found %s" % \
+            (hostUrlSecure, tap.get_host_url_secure())
         # GET
         subContext = "testSubContextGet"
         context = "/" + serverContext + "/" + tapContext + "/" + subContext
@@ -92,9 +96,11 @@ class ConnTest(unittest.TestCase):
         assert r.get_method() == 'GET', \
             "Request method. Expected %s, found %s" % ('GET', r.get_method())
         assert r.get_context() == context, \
-            "Request context. Expected %s, found %s" % (context, r.get_context())
+            "Request context. Expected %s, found %s" % \
+            (context, r.get_context())
         assert r.get_body() is None, \
-            "Request body. Expected %s, found %s" % ('None', str(r.get_body()))
+            "Request body. Expected %s, found %s" % \
+            ('None', str(r.get_body()))
 
     def test_get_secure(self):
         cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
@@ -120,8 +126,8 @@ class ConnTest(unittest.TestCase):
         hostUrlSecure = host + ":" + str(connPortSsl) + "/" + serverContext \
             + "/" + tapContext + "/"
         assert tap.get_host_url_secure() == hostUrlSecure, \
-            "Tap host secure. Expected %s, found %s" % (hostUrlSecure,
-                                                        tap.get_host_url_secure())
+            "Tap host secure. Expected %s, found %s" % \
+            (hostUrlSecure, tap.get_host_url_secure())
         # GET
         subContext = "testSubContextGet"
         context = "/" + serverContext + "/" + tapContext + "/" + subContext
@@ -131,9 +137,11 @@ class ConnTest(unittest.TestCase):
         assert r.get_method() == 'GET', \
             "Request method. Expected %s, found %s" % ('GET', r.get_method())
         assert r.get_context() == context, \
-            "Request context. Expected %s, found %s" % (context, r.get_context())
+            "Request context. Expected %s, found %s" % \
+            (context, r.get_context())
         assert r.get_body() is None, \
-            "Request body. Expected %s, found %s" % ('None', str(r.get_body()))
+            "Request body. Expected %s, found %s" % \
+            ('None', str(r.get_body()))
 
     def test_post_anon(self):
         anon = auth.AnonAuthMethod()
@@ -159,21 +167,25 @@ class ConnTest(unittest.TestCase):
         hostUrlSecure = host + ":" + str(connPortSsl) + "/" + serverContext \
             + "/" + tapContext + "/"
         assert tap.get_host_url_secure() == hostUrlSecure, \
-            "Tap host secure. Expected %s, found %s" % (hostUrlSecure,
-                                                        tap.get_host_url_secure())
+            "Tap host secure. Expected %s, found %s" % \
+            (hostUrlSecure, tap.get_host_url_secure())
         # GET
         subContext = "testSubContextGet"
         context = "/" + serverContext + "/" + tapContext + "/" + subContext
         data = "postData"
-        r = tap.execute_post(subcontext=subContext, data=data, authentication=anon)
+        r = tap.execute_post(subcontext=subContext,
+                             data=data,
+                             authentication=anon)
         assert r.status == 111, \
             "Status code, expected: %d, found: %d" % (111, r.status)
         assert r.get_method() == 'POST', \
             "Request method. Expected %s, found %s" % ('POST', r.get_method())
         assert r.get_context() == context, \
-            "Request context. Expected %s, found %s" % (context, r.get_context())
+            "Request context. Expected %s, found %s" % \
+            (context, r.get_context())
         assert r.get_body() == data, \
-            "Request body. Expected %s, found %s" % (data, str(r.get_body()))
+            "Request body. Expected %s, found %s" % \
+            (data, str(r.get_body()))
 
     def test_post_netrc(self):
         netrc = auth.NetrcAuthMethod(filename=data_path('netrc'))
@@ -199,22 +211,25 @@ class ConnTest(unittest.TestCase):
         hostUrlSecure = host + ":" + str(connPortSsl) + "/" + serverContext \
             + "/" + tapContext + "/"
         assert tap.get_host_url_secure() == hostUrlSecure, \
-            "Tap host secure. Expected %s, found %s" % (hostUrlSecure,
-                                                        tap.get_host_url_secure())
+            "Tap host secure. Expected %s, found %s" % \
+            (hostUrlSecure, tap.get_host_url_secure())
         # GET
         subContext = "testSubContextGet"
         context = "/" + serverContext + "/" + tapContext + "/" + subContext
         data = "postData"
-        r = tap.execute_post(subcontext=subContext, data=data, authentication=netrc)
+        r = tap.execute_post(subcontext=subContext,
+                             data=data,
+                             authentication=netrc)
         assert r.status == 111, \
             "Status code, expected: %d, found: %d" % (111, r.status)
         assert r.get_method() == 'POST', \
             "Request method. Expected %s, found %s" % ('POST', r.get_method())
         assert r.get_context() == context, \
-            "Request context. Expected %s, found %s" % (context, r.get_context())
+            "Request context. Expected %s, found %s" % \
+            (context, r.get_context())
         assert r.get_body() == data, \
-            "Request body. Expected %s, found %s" % (data, str(r.get_body()))
-
+            "Request body. Expected %s, found %s" % \
+            (data, str(r.get_body()))
 
     def test_post_secure(self):
         cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
@@ -240,21 +255,25 @@ class ConnTest(unittest.TestCase):
         hostUrlSecure = host + ":" + str(connPortSsl) + "/" + serverContext \
             + "/" + tapContext + "/"
         assert tap.get_host_url_secure() == hostUrlSecure, \
-            "Tap host secure. Expected %s, found %s" % (hostUrlSecure,
-                                                        tap.get_host_url_secure())
+            "Tap host secure. Expected %s, found %s" % \
+            (hostUrlSecure, tap.get_host_url_secure())
         # GET
         subContext = "testSubContextGet"
         context = "/" + serverContext + "/" + tapContext + "/" + subContext
         data = "postData"
-        r = tap.execute_post_secure(subcontext=subContext, data=data, authentication=cert)
+        r = tap.execute_post_secure(subcontext=subContext,
+                                    data=data,
+                                    authentication=cert)
         assert r.status == 111, \
             "Status code, expected: %d, found: %d" % (111, r.status)
         assert r.get_method() == 'POST', \
             "Request method. Expected %s, found %s" % ('POST', r.get_method())
         assert r.get_context() == context, \
-            "Request context. Expected %s, found %s" % (context, r.get_context())
+            "Request context. Expected %s, found %s" % \
+            (context, r.get_context())
         assert r.get_body() == data, \
-            "Request body. Expected %s, found %s" % (data, str(r.get_body()))
+            "Request body. Expected %s, found %s" % \
+            (data, str(r.get_body()))
 
     def test_check_launch_response_status(self):
         conn = DummyConn('http')
@@ -272,12 +291,13 @@ class ConnTest(unittest.TestCase):
                       port=connPort,
                       sslport=connPortSsl,
                       connhandler=conn)
-        status = tap.check_launch_response_status(conn.response, 
+        status = tap.check_launch_response_status(conn.response,
                                                   False,
                                                   200)
-        assert status == False, \
-            "Status code, expected: %d, found: %d" % (200, conn.response.status)
-       
+        assert status is False, \
+            "Status code, expected: %d, found: %d" % \
+            (200, conn.response.status)
+
     def test_encode_multipart(self):
         conn = DummyConn('http')
         host = "testHost"
@@ -293,12 +313,18 @@ class ConnTest(unittest.TestCase):
                       port=connPort,
                       sslport=connPortSsl,
                       connhandler=conn)
-        args = {'REQUEST': 'doQuery', 'LANG': 'ADQL', 'FORMAT': 'votable', 'tapclient': 'aqtappy-1.0.1', 'QUERY': 'SELECT  TOP 2000 * FROM tap_upload.test_table_upload', 'UPLOAD': 'test_table_upload,param:test_table_upload'}
+        args = {'REQUEST': 'doQuery',
+                'LANG': 'ADQL',
+                'FORMAT': 'votable',
+                'tapclient': 'aqtappy-1.0.1',
+                'QUERY': 'SELECT  TOP 2000 * FROM '
+                         'tap_upload.test_table_upload',
+                'UPLOAD': 'test_table_upload,param:test_table_upload'}
         files = [['test_table_upload', 'data/test.txt', 'testing encoding\n']]
 
         timeMillis = int(round(time.time() * 1000))
         boundary = '***%s***' % str(timeMillis)
-        contentType = "multipart/form-data; boundary=" + boundary          
+        contentType = "multipart/form-data; boundary=" + boundary
         body = '--' + boundary + '\
         Content-Disposition: form-data; name="REQUEST"\n\
         doQuery\
@@ -318,10 +344,11 @@ class ConnTest(unittest.TestCase):
         Content-Disposition: form-data; name="UPLOAD"\n\
         test_table_upload,param:test_table_upload\
         --' + boundary + '\
-        Content-Disposition: form-data; name="test_table_upload"; filename="data/test.txt"\
+        Content-Disposition: form-data; name="test_table_upload";' \
+        ' filename="data/test.txt"\
         Content-Type: None\n\
         testing encoding\n\
-        --' + boundary + '--' 
+        --' + boundary + '--'
 
         timeMillis = timeMillis + 1
         boundary = '***%s***' % str(timeMillis)
@@ -345,14 +372,17 @@ class ConnTest(unittest.TestCase):
         Content-Disposition: form-data; name="UPLOAD"\n\
         test_table_upload,param:test_table_upload\
         --' + boundary + '\
-        Content-Disposition: form-data; name="test_table_upload"; filename="data/test.txt"\
+        Content-Disposition: form-data; name="test_table_upload"; ' \
+        'filename="data/test.txt"\
         Content-Type: None\n\
         testing encoding\n\
         --' + boundary + '--'
 
         contentTypeTest, bodyTest = tap.encode_multipart(args, files)
-        assert contentTypeTest == contentType or contentTypeTest == contentTypeSecond, \
-            "ContentType, expected: %s, founds: %s" % (contentType, contentTypeTest)
+        assert contentTypeTest == contentType or \
+            contentTypeTest == contentTypeSecond, \
+            "ContentType, expected: %s, founds: %s" % \
+            (contentType, contentTypeTest)
         sbodyTest = ' '.join(bodyTest.split())
         sbody = ' '.join(body.split())
         sbodySecond = ' '.join(bodySecond.split())
@@ -362,3 +392,4 @@ class ConnTest(unittest.TestCase):
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
+

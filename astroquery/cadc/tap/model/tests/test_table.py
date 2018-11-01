@@ -10,6 +10,7 @@ import os
 from astroquery.cadc.tap.model.taptable import TapTableMeta
 from astroquery.cadc.tap.model.tapcolumn import TapColumn
 
+
 def data_path(filename):
     data_dir = os.path.join(os.path.dirname(__file__), 'data')
     return os.path.join(data_dir, filename)
@@ -42,3 +43,4 @@ class TestTable(unittest.TestCase):
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
+

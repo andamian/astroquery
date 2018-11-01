@@ -17,9 +17,11 @@ from astroquery.cadc.tap.core import TapPlus, TAP_CLIENT_ID
 from astroquery.cadc.tap.xmlparser import utils
 from astroquery.cadc.tap import taputils
 
+
 def data_path(filename):
     data_dir = os.path.join(os.path.dirname(__file__), 'data')
     return os.path.join(data_dir, filename)
+
 
 class TestTap(unittest.TestCase):
     def test_get_tables(self):
@@ -55,7 +57,8 @@ class TestTap(unittest.TestCase):
             "Number of columns for table1. Expected: %d, found: %d" % \
             (2, len(columns))
         col = self.__find_column('table1_col1', columns)
-        self.__check_column(col, 'Table1 Column1 desc', '', 'VARCHAR', 'indexed')
+        self.__check_column(col, 'Table1 Column1 desc',
+                            '', 'VARCHAR', 'indexed')
         col = self.__find_column('table1_col2', columns)
         self.__check_column(col, 'Table1 Column2 desc', '', 'INTEGER', None)
         # Table 2
@@ -68,7 +71,8 @@ class TestTap(unittest.TestCase):
             "Number of columns for table2. Expected: %d, found: %d" % \
             (3, len(columns))
         col = self.__find_column('table2_col1', columns)
-        self.__check_column(col, 'Table2 Column1 desc', '', 'VARCHAR', 'indexed')
+        self.__check_column(col, 'Table2 Column1 desc',
+                            '', 'VARCHAR', 'indexed')
         col = self.__find_column('table2_col2', columns)
         self.__check_column(col, 'Table2 Column2 desc', '', 'INTEGER', None)
         col = self.__find_column('table2_col3', columns)
@@ -145,9 +149,11 @@ class TestTap(unittest.TestCase):
             "Number of columns for table1. Expected: %d, found: %d" % \
             (2, len(columns))
         col = self.__find_column('table1_col1', columns)
-        self.__check_column(col, 'Table1 Column1 desc', '', 'VARCHAR', 'indexed')
+        self.__check_column(col, 'Table1 Column1 desc',
+                            '', 'VARCHAR', 'indexed')
         col = self.__find_column('table1_col2', columns)
-        self.__check_column(col, 'Table1 Column2 desc', '', 'INTEGER', None)
+        self.__check_column(col, 'Table1 Column2 desc',
+                            '', 'INTEGER', None)
 
     def test_run_query_sync(self):
         anon = auth.AnonAuthMethod()
@@ -703,16 +709,20 @@ class TestTap(unittest.TestCase):
                                dataType):
         c = results[columnName]
         assert c.description == description, \
-            "Wrong description for results column '%s'. Expected: '%s', found '%s'" % \
+            "Wrong description for results column '%s'. " \
+            "Expected: '%s', found '%s'" % \
             (columnName, description, c.description)
         assert c.unit == unit, \
-            "Wrong unit for results column '%s'. Expected: '%s', found '%s'" % \
+            "Wrong unit for results column '%s'. " \
+            "Expected: '%s', found '%s'" % \
             (columnName, unit, c.unit)
         assert c.dtype == dataType, \
-            "Wrong dataType for results column '%s'. Expected: '%s', found '%s'" % \
+            "Wrong dataType for results column '%s'. " \
+            "Expected: '%s', found '%s'" % \
             (columnName, dataType, c.dtype)
 
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
+

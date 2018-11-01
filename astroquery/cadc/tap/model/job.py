@@ -6,11 +6,14 @@ TAP plus
 
 """
 import time
+import requests
 
 from astroquery.cadc.tap.model import modelutils
 from astroquery.cadc.tap.xmlparser import utils
+from astropy.table import Table
 
 __all__ = ['Job']
+
 
 class Job(object):
     """Job class
@@ -146,14 +149,17 @@ class Job(object):
         """
         if update:
             if authentication.get_auth_method() == 'netrc':
-                phase_request = "auth-async/" + str(self.get_jobid()) + "/phase"
+                phase_request = "auth-async/"+str(self.get_jobid())+"/phase"
             else:
                 phase_request = "async/" + str(self.get_jobid()) + "/phase"
             if authentication.get_auth_method() == 'certificate':
-                response = self.__connHandler.execute_get_secure(phase_request, authentication=authentication)
+                response = self.__connHandler.execute_get_secure(
+                    phase_request,
+                    authentication=authentication)
             else:
-                response = self.__connHandler.execute_get(phase_request, 
-                                                          authentication=authentication)
+                response = self.__connHandler.execute_get(
+                    phase_request,
+                    authentication=authentication)
 
             self.__last_phase_response_status = response.status
             if response.status != 200:
@@ -511,14 +517,7 @@ class Job(object):
         """
         if self.__results is not None:
             return self.__results
-        # try load results from file
-        # read_results_table_from_file checks whether the file already exists or not
         outputFormat = self.get_output_format()
-        results = modelutils.read_results_table_from_file(self.__outputFile,
-                                                          outputFormat)
-        if results is not None:
-            self.set_results(results)
-            return results
         # Try to load from server: only async
         if not self.__async:
             # sync: result is in a file
@@ -575,27 +574,32 @@ class Job(object):
                     response = self.__connHandler.execute_get(
                         context, authentication=authentication)
                 if verbose:
-                    print(response.status, response.reason)
+                    print('GET save results ',response.status, response.reason)
                     print(response.getheaders())
 
                 numberOfRedirects = 0
-                while (response.status == 303 or response.status == 302) and numberOfRedirects < 20:
-                    joblocation = self.__connHandler.find_header(response.getheaders(), "location")
+                while (response.status == 303 or response.status == 302) and \
+                        numberOfRedirects < 20:
+                    joblocation = self.__connHandler.find_header(
+                        response.getheaders(), "location")
                     if authentication.get_auth_method() == 'certificate':
-                        response = self.__connHandler.execute_get_secure(context, 
-                                                                         otherlocation=joblocation,
-                                                                         authentication=authentication)
+                        response = self.__connHandler.execute_get_secure(
+                            context,
+                            otherlocation=joblocation,
+                            authentication=authentication)
                     else:
-                        response = self.__connHandler.execute_get(context, 
-                                                                  otherlocation=joblocation,
-                                                                  authentication=authentication)
+                        response = self.__connHandler.execute_get(
+                            context,
+                            otherlocation=joblocation,
+                            authentication=authentication)
                     numberOfRedirects += 1
                     if verbose:
-                        print(response.status, response.reason)
+                        print('GET save results redirect ', response.status, response.reason)
                         print(response.getheaders())
-                isError = self.__connHandler.check_launch_response_status(response,
-                                                                          verbose,
-                                                                          200)
+                isError = self.__connHandler.check_launch_response_status(
+                    response,
+                    verbose,
+                    200)
                 if isError:
                     if verbose:
                         print(response.reason)
@@ -621,7 +625,8 @@ class Job(object):
             lphase = responseData.lower().strip()
             if verbose:
                 print("Job " + self.__jobid + " status: " + lphase)
-            if "pending" != lphase and "queued" != lphase and "executing" != lphase:
+            if "pending" != lphase and "queued" != lphase and \
+                    "executing" != lphase:
                 break
             # PENDING, QUEUED, EXECUTING, COMPLETED, ERROR, ABORTED, UNKNOWN,
             # HELD, SUSPENDED, ARCHIVED:
@@ -630,39 +635,52 @@ class Job(object):
 
     def __load_async_job_results(self, authentication=None, debug=False):
         wjResponse, wjData = self.wait_for_job_end(authentication)
+        if wjData != 'COMPLETED':
+            raise requests.exceptions.HTTPError(
+                'Error running query, PHASE: '+wjData)
         if authentication.get_auth_method() == 'netrc':
             subContext = "auth-async/" + str(self.__jobid) + "/results/result"
         else:
             subContext = "async/" + str(self.__jobid) + "/results/result"
         if authentication.get_auth_method() == 'certificate':
-            resultsResponse = self.__connHandler.execute_get_secure(subContext, authentication=authentication)
+            resultsResponse = self.__connHandler.execute_get_secure(
+                subContext,
+                authentication=authentication)
         else:
-            resultsResponse = self.__connHandler.execute_get(subContext, authentication=authentication)
+            resultsResponse = self.__connHandler.execute_get(
+                subContext,
+                authentication=authentication)
         if debug:
             print(resultsResponse.status, resultsResponse.reason)
             print(resultsResponse.getheaders())
 
         numberOfRedirects = 0
-        while (resultsResponse.status == 303 or resultsResponse.status == 302) and numberOfRedirects < 20:
-            joblocation = self.__connHandler.find_header(resultsResponse.getheaders(), "location")
+        while (resultsResponse.status == 303 or resultsResponse.status == 302)\
+                and numberOfRedirects < 20:
+            joblocation = self.__connHandler.find_header(
+                resultsResponse.getheaders(),
+                "location")
             if authentication.get_auth_method() == 'certificate':
-                resultsResponse = self.__connHandler.execute_get_secure(subContext, 
-                                                                        otherlocation=joblocation,
-                                                                        authentication=authentication)
+                resultsResponse = self.__connHandler.execute_get_secure(
+                    subContext,
+                    otherlocation=joblocation,
+                    authentication=authentication)
             else:
-                resultsResponse = self.__connHandler.execute_get(subContext, 
-                                                                 otherlocation=joblocation,
-                                                                 authentication=authentication)
+                resultsResponse = self.__connHandler.execute_get(
+                    subContext,
+                    otherlocation=joblocation,
+                    authentication=authentication)
             numberOfRedirects += 1
             if debug:
                 print(resultsResponse.status, resultsResponse.reason)
                 print(resultsResponse.getheaders())
 
-        isError = self.__connHandler.check_launch_response_status(resultsResponse,
-                                                                  debug,
-                                                                  200)
+        isError = self.__connHandler.check_launch_response_status(
+            resultsResponse,
+            debug,
+            200)
         if isError:
-            if verbose:
+            if debug:
                 print(resultsResponse.reason)
             raise Exception(resultsResponse.reason)
         else:
@@ -681,3 +699,4 @@ class Job(object):
             "\nOwner: " + str(self.__ownerid) + \
             "\nOutput file: " + str(self.__outputFile) + \
             "\nResults: " + str(result)
+

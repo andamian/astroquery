@@ -15,6 +15,7 @@ READING_SCHEMA = 10
 READING_TABLE = 20
 READING_TABLE_COLUMN = 30
 
+
 class TableSaxParser(xml.sax.ContentHandler):
     '''
     classdocs
@@ -103,7 +104,8 @@ class TableSaxParser(xml.sax.ContentHandler):
             self.__currentTable.set_name(self.__create_string_from_buffer())
         elif self.__check_item_id("description", name):
             self.__stop_reading_data()
-            self.__currentTable.set_description(self.__create_string_from_buffer())
+            self.__currentTable.set_description(
+                self.__create_string_from_buffer())
         elif self.__check_item_id("table", name):
             self.__tables.append(self.__currentTable)
             self.__status = READING_SCHEMA
@@ -129,7 +131,8 @@ class TableSaxParser(xml.sax.ContentHandler):
             self.__currentColumn.set_name(self.__create_string_from_buffer())
             self.__stop_reading_data()
         elif self.__check_item_id("description", name):
-            self.__currentColumn.set_description(self.__create_string_from_buffer())
+            self.__currentColumn.set_description(
+                self.__create_string_from_buffer())
             self.__stop_reading_data()
         elif self.__check_item_id("unit", name):
             self.__currentColumn.set_unit(self.__create_string_from_buffer())
@@ -141,7 +144,8 @@ class TableSaxParser(xml.sax.ContentHandler):
             self.__currentColumn.set_utype(self.__create_string_from_buffer())
             self.__stop_reading_data()
         elif self.__check_item_id("datatype", name):
-            self.__currentColumn.set_data_type(self.__create_string_from_buffer())
+            self.__currentColumn.set_data_type(
+                self.__create_string_from_buffer())
             self.__stop_reading_data()
         elif self.__check_item_id("flag", name):
             self.__currentColumn.set_flag(self.__create_string_from_buffer())
@@ -158,8 +162,9 @@ class TableSaxParser(xml.sax.ContentHandler):
             return None
         for table in self.__tables:
             if table_name == table.get_qualified_name():
-                return table 
+                return table
         return None
 
     def get_tables(self):
         return self.__tables
+

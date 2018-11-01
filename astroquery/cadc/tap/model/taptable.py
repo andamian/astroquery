@@ -6,6 +6,7 @@ TAP plus
 
 """
 
+
 class TapTableMeta(object):
     """TAP table metadata object
     """
@@ -109,3 +110,4 @@ class TapTableMeta(object):
         return "TAP Table name: " + str(self.get_qualified_name()) + \
             "\nDescription: " + str(self.get_description()) + \
             "\nNum. columns: " + str(len(self.get_columns()))
+

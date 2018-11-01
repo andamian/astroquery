@@ -12,6 +12,7 @@ TAP_UTILS_QUERY_TOP_PATTERN = re.compile(
 TAP_UTILS_QUERY_ALL_DISTINCT_PATTERN = re.compile(
     r"\s*SELECT\s+(ALL\s+|DISTINCT\s+)", re.IGNORECASE)
 
+
 def taputil_find_header(headers, key):
     """Searches for the specified keyword
 
@@ -51,6 +52,7 @@ def taputil_create_sorted_dict_key(dictionaryObject):
         listTmp.append(str(k) + '=' + str(dictionaryObject[k]))
     return '&'.join(listTmp)
 
+
 def set_top_in_query(query, top):
     if query is None:
         return query
@@ -73,3 +75,4 @@ def set_top_in_query(query, top):
             p = q.find("SELECT ")
             nq = query[0:p+7] + " TOP " + str(top) + " " + query[p+7:]
         return nq
+

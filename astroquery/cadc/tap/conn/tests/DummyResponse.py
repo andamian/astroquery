@@ -6,6 +6,7 @@ TAP plus
 
 """
 
+
 class DummyResponse(object):
     '''
     classdocs
@@ -66,3 +67,4 @@ class DummyResponse(object):
 
     def getheaders(self):
         return self.headers
+

@@ -20,6 +20,7 @@ __all__ = ['Tap', 'TapPlus']
 VERSION = "1.0.1"
 TAP_CLIENT_ID = "aqtappy-" + VERSION
 
+
 class Tap(object):
     """TAP class
     Provides TAP capabilities
@@ -54,7 +55,8 @@ class Tap(object):
         """
         self.__internalInit()
         if url is not None:
-            protocol, host, port, server_context, tap_context = self.__parseUrl(url)
+            protocol, host, port, server_context, \
+            tap_context = self.__parseUrl(url)
             if protocol == "http":
                 self.__connHandler = TapConn(False,
                                              host,
@@ -81,13 +83,14 @@ class Tap(object):
         if connhandler is not None:
             self.__connHandler = connhandler
         if verbose:
-            print("Created TAP+ (v"+VERSION+") - Connection:\n" + str(self.__connHandler))
+            print("Created TAP+ (v"+VERSION+") - Connection:\n" +
+                  str(self.__connHandler))
 
     def __internalInit(self):
         self.__connHandler = None
 
     def get_tables(self, verbose=False, authentication=None):
-        """Loads all public tables
+        """Gets all public tables
 
         Parameters
         ----------
@@ -100,10 +103,12 @@ class Tap(object):
         -------
         A list of table objects
         """
-        return self.__get_tables(verbose=verbose, authentication=authentication)
+        return self.__get_tables(verbose=verbose,
+                                 authentication=authentication)
 
-    def __get_tables(self, only_names=False, verbose=False, authentication=None):
-        """Loads all public tables
+    def __get_tables(self, only_names=False,
+                     verbose=False, authentication=None):
+        """Gets all public tables
 
         Parameters
         ----------
@@ -118,14 +123,14 @@ class Tap(object):
         -------
         A list of table objects
         """
-        if authentication == None:
+        if authentication is None:
             raise ValueError(
                 'Authentication Required')
         auth = authentication.get_auth_method()
         if auth == 'netrc':
-                table='auth-tables' 
+            table = 'auth-tables'
         else:
-            table='tables'
+            table = 'tables'
         flags = ""
         addedItem = False
         if only_names:
@@ -135,23 +140,29 @@ class Tap(object):
             print("Retrieving tables...")
         if flags != "":
             if auth == 'certificate':
-                response = self.__connHandler.execute_get_secure("tables?"+flags, authentication=authentication)
+                response = self.__connHandler.execute_get_secure(
+                    "tables?"+flags,
+                    authentication=authentication)
             else:
-                response = self.__connHandler.execute_get(table+"?"+flags, 
-                                                          authentication=authentication)
+                response = self.__connHandler.execute_get(
+                    table+"?"+flags,
+                    authentication=authentication)
         else:
             if auth == 'certificate':
-                response = self.__connHandler.execute_get_secure("tables", authentication=authentication)
+                response = self.__connHandler.execute_get_secure(
+                    "tables",
+                    authentication=authentication)
             else:
-                response = self.__connHandler.execute_get(table, 
-                                                          authentication=authentication)
+                response = self.__connHandler.execute_get(
+                    table,
+                    authentication=authentication)
         if verbose:
-            print('GET tables response ',response.status, response.reason)
+            print('GET tables response ', response.status, response.reason)
         isError = self.__connHandler.check_launch_response_status(response,
                                                                   verbose,
                                                                   200)
         if isError:
-            if verbose:   
+            if verbose:
                 print(response.status, response.reason)
             raise requests.exceptions.HTTPError(response.reason)
             return None
@@ -163,21 +174,21 @@ class Tap(object):
             print("Done.")
         return tsp.get_tables()
 
-    def run_query(self, query, operation, output_file=None, output_format="votable", verbose=False,
-                  save_to_file=False, upload_resource=None, upload_table_name=None, 
+    def run_query(self, query, operation, output_file=None,
+                  output_format="votable", verbose=False, save_to_file=False,
+                  upload_resource=None, upload_table_name=None,
                   background=False, authentication=None):
-        """Launches a synchronous job
+        """Runs a query
 
         Parameters
         ----------
         query : str, mandatory
             query to be executed
         operation : str, mandatory
-                    'sync' or 'async' to run a synchronous or asynchronous job
+            'sync' or 'async' to run a synchronous or asynchronous job
         output_file : str, optional, default None
-        return logger
-            file name where the results are saved if dumpToFile is True.
-            If this parameter is not provided, the jobid is used instead
+            file name where the results are saved if saveToFile is True.
+            If this parameter is not provided, the datetime is used instead
         output_format : str, optional, default 'votable'
             results format
         verbose : bool, optional, default 'False'
@@ -186,11 +197,13 @@ class Tap(object):
             if True, the results are saved in a file instead of using memory
         upload_resource: str, optional, default None
             resource to be uploaded to UPLOAD_SCHEMA
-        upload_table_name: str, required if uploadResource is provided, default None
-            resource temporary table name associated to the uploaded resource
+        upload_table_name: str, required if uploadResource is provided,
+            default None, resource temporary table name associated to
+            the uploaded resource
         background : bool, optional, default 'False'
-                     when the job is executed in asynchronous mode, this flag specifies whether
-                     the execution will wait until results are available
+                     when the job is executed in asynchronous mode,
+                     this flag specifies whether the execution will wait until
+                      results are available
         authentication : AuthMethod object, mandatory, default 'None'
             authentication object to use
 
@@ -198,12 +211,12 @@ class Tap(object):
         -------
         A Job object
         """
-        if authentication == None:
+        if authentication is None:
             raise ValueError(
                 'Authentication Required')
         if operation != 'async' and operation != 'sync':
-           raise ValueError(
-               'Operation must be "sync" or "async", not "%s"' % operation)
+            raise ValueError(
+                'Operation must be "sync" or "async", not "%s"' % operation)
         if authentication.get_auth_method() == 'netrc':
             context = 'auth-' + operation
         else:
@@ -214,7 +227,8 @@ class Tap(object):
             print("Ran query: '"+str(query)+"'")
         if upload_resource is not None:
             if upload_table_name is None:
-                raise ValueError("Table name is required when a resource is uploaded")
+                raise ValueError(
+                    "Table name is required when a resource is uploaded")
             response = self.__runQueryMultipart(query,
                                                 upload_resource,
                                                 upload_table_name,
@@ -226,30 +240,34 @@ class Tap(object):
             response = self.__runQuery(query,
                                        output_format,
                                        context,
-                                       verbose, 
+                                       verbose,
                                        authentication)
         if operation == 'sync':
-           # handle redirection
-           while response.status == 303 or response.status == 302:
-               # redirection
-               if verbose:
-                   print("Redirection found")
-               location = self.__connHandler.find_header(
-                   response.getheaders(),
-                   "location")
-               if location is None:
-                   raise requests.exceptions.HTTPError("No location found after redirection was received (303)")
-               if verbose:
-                   print("Redirect to %s", location)
-               subcontext = self.__extract_sync_subcontext(location)
-               if authentication.get_auth_method() == 'certificate':
-                   response = self.__connHandler.execute_get_secure(subcontext, 
-                                                                    otherlocation=location,
-                                                                    authentication=authentication)
-               else:
-                   response = self.__connHandler.execute_get(subcontext, 
-                                                             otherlocation=location,
-                                                             authentication=authentication)
+            # handle redirection
+            while response.status == 303 or response.status == 302:
+                # redirection
+                if verbose:
+                    print("Redirection found")
+                location = self.__connHandler.find_header(
+                    response.getheaders(),
+                    "location")
+                if location is None:
+                    raise requests.exceptions.HTTPError(
+                        "No location found after redirection "
+                        " was received (303)")
+                if verbose:
+                    print("Redirect to %s", location)
+                subcontext = self.__extract_sync_subcontext(location)
+                if authentication.get_auth_method() == 'certificate':
+                    response = self.__connHandler.execute_get_secure(
+                        subcontext,
+                        otherlocation=location,
+                        authentication=authentication)
+                else:
+                    response = self.__connHandler.execute_get(
+                        subcontext,
+                        otherlocation=location,
+                        authentication=authentication)
         if operation == 'sync':
             code = 200
         else:
@@ -261,12 +279,15 @@ class Tap(object):
             is_async = False
         else:
             is_async = True
-        job = Job(async_job=is_async, query=query, connhandler=self.__connHandler)
-        suitableOutputFile = self.__getSuitableOutputFile(False,
-                                                          output_file,
-                                                          response.getheaders(),
-                                                          isError,
-                                                          output_format)
+        job = Job(async_job=is_async,
+                  query=query,
+                  connhandler=self.__connHandler)
+        suitableOutputFile = self.__getSuitableOutputFile(
+            job.is_async(),
+            output_file,
+            response.getheaders(),
+            isError,
+            output_format)
         job.set_output_file(suitableOutputFile)
         job.set_response_status(response.status, response.reason)
         job.set_output_format(output_format)
@@ -280,7 +301,8 @@ class Tap(object):
                 if verbose:
                     print("Retrieving sync. results...")
                 if save_to_file:
-                    self.__connHandler.save_to_file(suitableOutputFile, response)
+                    self.__connHandler.save_to_file(suitableOutputFile,
+                                                    response)
                 else:
                     results = utils.read_http_response(response, output_format)
                     job.set_results(results)
@@ -292,18 +314,23 @@ class Tap(object):
                     response.getheaders(),
                     "location")
                 jobid = self.__getJobId(location)
-                runresponse = self.__runAsyncQuery(jobid, verbose, authentication=authentication)
-                isNextError = self.__connHandler.check_launch_response_status(runresponse,
-                                                                              verbose,
-                                                                              303)
+                runresponse = self.__runAsyncQuery(
+                    jobid,
+                    verbose,
+                    authentication=authentication)
+                isNextError = self.__connHandler.check_launch_response_status(
+                    runresponse,
+                    verbose,
+                    303)
                 if isNextError:
                     job.set_failed(True)
                     if save_to_file:
-                        self.__connHandler.save_to_file(suitableOutputFile, runresponse)
+                        self.__connHandler.save_to_file(suitableOutputFile,
+                                                        runresponse)
                     raise requests.exceptions.HTTPError(runresponse.reason)
                 else:
                     if verbose:
-                        print("job " + str(jobid) + ", at: " + str(location))
+                        print("job "+str(jobid)+", at: "+str(location))
                     job.set_jobid(jobid)
                     job.set_remote_location(location)
                     if not background:
@@ -312,18 +339,23 @@ class Tap(object):
                         if save_to_file:
                             job.save_results(verbose, authentication)
                         else:
-                            job.get_results(verbose=verbose, authentication=authentication)
+                            job.get_results(verbose=verbose,
+                                            authentication=authentication)
                             if verbose:
                                 print("Query finished.")
         return job
 
-    def load_async_job(self, jobid=None, verbose=False, authentication=None):
+    def load_async_job(self, jobid=None, output_file=None,
+                       verbose=False, authentication=None):
         """Loads an asynchronous job
 
         Parameters
         ----------
         jobid : str, mandatory if no name is provided, default None
             job identifier
+        output_file : str, optional, default None
+            file name where the results are saved if saveToFile is True.
+            If this parameter is not provided, the datetime is used instead
         verbose : bool, optional, default 'False'
             flag to display information about the process
         authentication : AuthMethod object, mandatory, default 'None'
@@ -333,7 +365,7 @@ class Tap(object):
         -------
         A Job object
         """
-        if authentication == None:
+        if authentication is None:
             raise ValueError(
                 'Authentication Required')
         if jobid is None:
@@ -345,13 +377,15 @@ class Tap(object):
         else:
             subContext = "async/" + str(jobid)
         if authentication.get_auth_method() == 'certificate':
-            response = self.__connHandler.execute_get_secure(subContext, 
-                                                             authentication=authentication)
+            response = self.__connHandler.execute_get_secure(
+                subContext,
+                authentication=authentication)
         else:
-            response = self.__connHandler.execute_get(subContext, 
-                                                      authentication=authentication)
+            response = self.__connHandler.execute_get(
+                subContext,
+                authentication=authentication)
         if verbose:
-            print(response.status, response.reason)
+            print('GET job response ', response.status, response.reason)
             print(response.getheaders())
         isError = self.__connHandler.check_launch_response_status(response,
                                                                   verbose,
@@ -365,6 +399,15 @@ class Tap(object):
         jsp = JobSaxParser(async_job=True)
         job = jsp.parseData(response)[0]
         job.set_connhandler(self.__connHandler)
+        suitableOutputFile = self.__getSuitableOutputFile(
+            job.is_async(),
+            output_file,
+            response.getheaders(),
+            isError,
+            job.get_parameter('FORMAT'))
+        job.set_output_file(suitableOutputFile)
+        job.set_output_format(job.get_parameter('FORMAT'))
+
         # load resulst
         job.get_results(verbose, authentication=authentication)
         return job
@@ -383,7 +426,7 @@ class Tap(object):
         -------
         A list of Job objects
         """
-        if authentication == None:
+        if authentication is None:
             raise ValueError(
                 'Authentication Required')
         auth_type = authentication.get_auth_method()
@@ -395,11 +438,15 @@ class Tap(object):
         else:
             subContext = "async"
         if auth_type == 'certificate':
-            response = self.__connHandler.execute_get_secure(subContext, authentication=authentication)
+            response = self.__connHandler.execute_get_secure(
+                subContext,
+                authentication=authentication)
         else:
-            response = self.__connHandler.execute_get(subContext, authentication=authentication)
+            response = self.__connHandler.execute_get(
+                subContext,
+                authentication=authentication)
         if verbose:
-            print(response.status, response.reason)
+            print('GET job list response ', response.status, response.reason)
             print(response.getheaders())
         isError = self.__connHandler.check_launch_response_status(response,
                                                                   verbose,
@@ -429,7 +476,7 @@ class Tap(object):
         authentication : AuthMethod object, mandatory, default 'None'
             authentication object to use
         """
-        if authentication == None:
+        if authentication is None:
             raise ValueError(
                 'Authentication Required')
         job.save_results(verbose=verbose, authentication=authentication)
@@ -440,7 +487,8 @@ class Tap(object):
         return jobid
 
     def __runQueryMultipart(self, query, uploadResource, uploadTableName,
-                            outputFormat, context, verbose, authentication=None):
+                            outputFormat, context, verbose,
+                            authentication=None):
         uploadValue = str(uploadTableName) + ",param:" + str(uploadTableName)
         args = {
             "REQUEST": "doQuery",
@@ -455,18 +503,24 @@ class Tap(object):
         files = [[uploadTableName, uploadResource, chunk]]
         contentType, body = self.__connHandler.encode_multipart(args, files)
         if authentication.get_auth_method() == 'certificate':
-            response = self.__connHandler.execute_post_secure(context, body, contentType, authentication=authentication)
+            response = self.__connHandler.execute_post_secure(
+                context,
+                body,
+                contentType,
+                authentication=authentication)
         else:
-            response = self.__connHandler.execute_post(context, 
-                                                       body, 
-                                                       contentType,
-                                                       authentication=authentication)
+            response = self.__connHandler.execute_post(
+                context,
+                body,
+                contentType,
+                authentication=authentication)
         if verbose:
-            print(response.status, response.reason)
+            print('POST query response ', response.status, response.reason)
             print(response.getheaders())
         return response
 
-    def __runQuery(self, query, outputFormat, context, verbose, authentication=None):
+    def __runQuery(self, query, outputFormat,
+                   context, verbose, authentication=None):
         args = {
             "REQUEST": "doQuery",
             "LANG": "ADQL",
@@ -475,13 +529,17 @@ class Tap(object):
             "QUERY": str(query)}
         data = self.__connHandler.url_encode(args)
         if authentication.get_auth_method() == 'certificate':
-            response = self.__connHandler.execute_post_secure(context, data, authentication=authentication)
+            response = self.__connHandler.execute_post_secure(
+                context,
+                data,
+                authentication=authentication)
         else:
-            response = self.__connHandler.execute_post(context, 
-                                                       data,
-                                                       authentication=authentication)
+            response = self.__connHandler.execute_post(
+                context,
+                data,
+                authentication=authentication)
         if verbose:
-            print(response.status, response.reason)
+            print('POST query response ', response.status, response.reason)
             print(response.getheaders())
         return response
 
@@ -494,13 +552,17 @@ class Tap(object):
         else:
             jobpath = 'async/' + jobid + '/phase'
         if authentication.get_auth_method() == 'certificate':
-            response = self.__connHandler.execute_post_secure(jobpath, data, authentication=authentication)
+            response = self.__connHandler.execute_post_secure(
+                jobpath,
+                data,
+                authentication=authentication)
         else:
-            response = self.__connHandler.execute_post(jobpath, 
-                                                       data, 
-                                                       authentication=authentication)
+            response = self.__connHandler.execute_post(
+                jobpath,
+                data,
+                authentication=authentication)
         if verbose:
-            print(response.status, response.reason)
+            print('POST run query response ', response.status, response.reason)
             print(response.getheaders())
         return response
 
@@ -593,7 +655,8 @@ class Tap(object):
         return protocol, host, port, serverContext, tapContext
 
     def __str__(self):
-        return ("Created TAP+ (v" + VERSION + ") - Connection: \n" + str(self.__connHandler))
+        return ("Created TAP+ (v" + VERSION + ") - Connection: \n" +
+                str(self.__connHandler))
 
 
 class TapPlus(Tap):
@@ -633,7 +696,7 @@ class TapPlus(Tap):
                                       connhandler, verbose)
 
     def get_tables(self, only_names=False, verbose=False, authentication=None):
-        """Loads all public tables
+        """Gets all public tables
 
         Parameters
         ----------
@@ -653,7 +716,7 @@ class TapPlus(Tap):
                                      authentication=authentication)
 
     def get_table(self, table, verbose=False, authentication=None):
-        """Loads the specified table
+        """Gets the specified table
 
         Parameters
         ----------
@@ -668,24 +731,28 @@ class TapPlus(Tap):
         -------
         A table object
         """
-        if authentication == None:
+        if authentication is None:
             raise ValueError(
                 'Authentication Required')
         if verbose:
-             print("Retrieving table '"+str(table)+"'")
+            print("Retrieving table '"+str(table)+"'")
         connHandler = self.__getconnhandler()
         if authentication.get_auth_method() == 'certificate':
-            response = connHandler.execute_get_secure("tables", authentication=authentication)
+            response = connHandler.execute_get_secure(
+                "tables",
+                authentication=authentication)
         else:
             if authentication.get_auth_method() == 'netrc':
-                authtable='auth-tables'
+                authtable = 'auth-tables'
             else:
-                authtable='tables'
-            response = connHandler.execute_get(authtable, 
+                authtable = 'tables'
+            response = connHandler.execute_get(authtable,
                                                authentication=authentication)
         if verbose:
-            print('GET table response ',response.status, response.reason)
-        isError = connHandler.check_launch_response_status(response, verbose, 200)
+            print('GET table response ', response.status, response.reason)
+        isError = connHandler.check_launch_response_status(response,
+                                                           verbose,
+                                                           200)
         if isError:
             if verbose:
                 print(response.status, response.reason)
@@ -701,3 +768,4 @@ class TapPlus(Tap):
 
     def __getconnhandler(self):
         return self._Tap__connHandler
+

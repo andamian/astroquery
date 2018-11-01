@@ -10,6 +10,7 @@ from astropy import units as u
 from astropy.table import Table as APTable
 import six
 
+
 def util_create_string_from_buffer(buffer):
     if six.PY2:
         # 2.7
@@ -17,6 +18,7 @@ def util_create_string_from_buffer(buffer):
     else:
         # 3.0
         return ''.join(map(str, buffer))
+
 
 def read_http_response(response, outputFormat, correct_units=True):
     astropyFormat = get_suitable_astropy_format(outputFormat)
@@ -34,13 +36,15 @@ def read_http_response(response, outputFormat, correct_units=True):
             col = result[cn]
             if isinstance(col.unit, u.UnrecognizedUnit):
                 try:
-                    col.unit = u.Unit(col.unit.name.replace(".", " ").replace("'", ""))
+                    col.unit = u.Unit(
+                        col.unit.name.replace(".", " ").replace("'", ""))
                 except Exception as ex:
                     pass
             elif isinstance(col.unit, str):
                 col.unit = col.unit.replace(".", " ").replace("'", "")
 
     return result
+
 
 def get_suitable_astropy_format(outputFormat):
     if "csv" == outputFormat:
@@ -53,3 +57,4 @@ def read_file_content(filePath):
     fileContent = fileHandler.read()
     fileHandler.close()
     return fileContent
+

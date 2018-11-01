@@ -12,3 +12,4 @@ from astroquery.cadc.tap.model.taptable import TapTableMeta
 from astroquery.cadc.tap.model.tapcolumn import TapColumn
 
 __all__ = ['Tap', 'TapPlus', 'TapTableMeta', 'TapColumn']
+

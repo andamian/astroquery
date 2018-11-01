@@ -10,6 +10,7 @@ from astroquery.cadc.tap import taputils
 from astropy.extern.six.moves.urllib.parse import urlencode
 from astroquery.cadc.tap.xmlparser import utils
 
+
 class DummyConnHandler(object):
 
     def __init__(self):
@@ -43,7 +44,8 @@ class DummyConnHandler(object):
     def set_response(self, request, response):
         self.responses[str(request)] = response
 
-    def execute_get(self, request, otherlocation=None, authentication=None, subject=None):
+    def execute_get(self, request, otherlocation=None,
+                    authentication=None, subject=None):
         if otherlocation is None:
             self.request = request
         else:
@@ -53,7 +55,8 @@ class DummyConnHandler(object):
                 self.request = request
         return self.__get_response(self.request)
 
-    def execute_get_secure(self, request, otherlocation=None, authentication=None, subject=None):
+    def execute_get_secure(self, request, otherlocation=None,
+                           authentication=None, subject=None):
         if otherlocation is None:
             self.request = request
         else:
@@ -80,7 +83,7 @@ class DummyConnHandler(object):
         self.errorReceivedResponse = response
         outputFormat = 'votable'
         self.table = utils.read_http_response(response, outputFormat)
-        
+
     def __get_response(self, responseid):
         try:
             return self.responses[str(responseid)]
@@ -111,7 +114,8 @@ class DummyConnHandler(object):
         isError = False
         if response.status != expected_response_status:
             if debug:
-                print("ERROR: " + str(response.status) + ": " + str(response.reason))
+                print("ERROR: " + str(response.status) + ": " +
+                      str(response.reason))
             isError = True
         return isError
 
@@ -129,3 +133,4 @@ class DummyConnHandler(object):
 
     def find_header(self, headers, key):
         return taputils.taputil_find_header(headers, key)
+

@@ -12,9 +12,11 @@ from astroquery.cadc.tap.xmlparser.jobListSaxParser import JobListSaxParser
 from astroquery.cadc.tap.xmlparser.jobSaxParser import JobSaxParser
 from astroquery.cadc.tap.xmlparser import utils
 
+
 def data_path(filename):
     data_dir = os.path.join(os.path.dirname(__file__), 'data')
     return os.path.join(data_dir, filename)
+
 
 class XmlParserTest(unittest.TestCase):
 
@@ -87,3 +89,4 @@ class XmlParserTest(unittest.TestCase):
         o = job.get_ownerid()
         assert str(o) == str(jobOwner), \
             "Expected job owner: %s, found %s" % (jobOwner, o)
+

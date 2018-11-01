@@ -24,6 +24,8 @@ class CadcTAP(object):
             a url to use instead of the default 
         tap_plus_handler : TAP/TAP+ object, optional, default 'None'
             connection to use instead of the default one created
+        verbose : bool, optional, default 'False'
+            flag to display information about the process
  
         Returns
         -------
@@ -39,9 +41,9 @@ class CadcTAP(object):
             self.__cadctap = tap_plus_handler
 
     def get_tables(self, only_names=False, verbose=False,  authentication=None):
-        """Loads all public tables
-        TAP & TAP+
-
+        """
+        Gets all public tables
+        
         Parameters
         ----------
         only_names : bool, TAP+ only, optional, default 'False'
@@ -60,9 +62,9 @@ class CadcTAP(object):
                                          authentication=authentication)
 
     def get_table(self, table, verbose=False, authentication=None):
-        """Loads the specified table
-        TAP+ only
-
+        """
+        Gets the specified table
+        
         Parameters
         ----------
         table : str, mandatory
@@ -81,8 +83,8 @@ class CadcTAP(object):
     def run_query(self, query, operation, output_file=None, output_format="votable", 
                   verbose=False, save_to_file=False, background=False,
                   upload_resource=None, upload_table_name=None, authentication=None):
-        """Launches a job
-        TAP & TAP+
+        """
+        Runs a query
 
         Parameters
         ----------
@@ -125,9 +127,9 @@ class CadcTAP(object):
                                         authentication=authentication)
 
     def load_async_job(self, jobid, verbose=False, authentication=None):
-        """Loads an asynchronous job
-        TAP & TAP+
-
+        """
+        Loads an asynchronous job
+       
         Parameters
         ----------
         jobid : str, mandatory
@@ -144,9 +146,9 @@ class CadcTAP(object):
         return self.__cadctap.load_async_job(jobid, verbose, authentication=authentication)
 
     def list_async_jobs(self, verbose=False, authentication=None):
-        """Returns all the asynchronous jobs
-        TAP & TAP+
-
+        """
+        Returns all the asynchronous jobs
+        
         Parameters
         ----------
         verbose : bool, optional, default 'False'
@@ -161,9 +163,9 @@ class CadcTAP(object):
         return self.__cadctap.list_async_jobs(verbose, authentication=authentication)
 
     def save_results(self, job, verbose=False, authentication=None):
-        """Saves job results
-        TAP & TAP+
-
+        """
+        Saves job results
+        
         Parameters
         ----------
         job : Job, mandatory

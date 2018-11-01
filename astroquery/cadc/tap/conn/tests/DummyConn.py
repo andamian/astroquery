@@ -7,6 +7,7 @@ TAP plus
 """
 from astroquery.cadc.tap.conn.tests.DummyResponse import DummyResponse
 
+
 class DummyConn(object):
     '''
     classdocs
@@ -55,3 +56,4 @@ class DummyHttpConn(object):
 
     def getresponse(self):
         return self.response
+

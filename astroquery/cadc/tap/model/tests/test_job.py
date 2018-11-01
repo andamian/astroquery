@@ -15,6 +15,7 @@ from astroquery.cadc.tap.conn.tests.DummyConnHandler import DummyConnHandler
 from astroquery.cadc.tap.conn.tests.DummyResponse import DummyResponse
 from astroquery.cadc.tap.xmlparser import utils
 
+
 def data_path(filename):
     data_dir = os.path.join(os.path.dirname(__file__), 'data')
     return os.path.join(data_dir, filename)
@@ -81,8 +82,8 @@ class TestJob(unittest.TestCase):
             "jobid, expected: %s, found: %s" % (jobid,
                                                 job.get_jobid())
         assert job.get_remote_location() == remoteLocation, \
-            "remoteLocation, expected: %s, found: %s" % (remoteLocation,
-                                                         job.get_remote_location())
+            "remoteLocation, expected: %s, found: %s" % \
+            (remoteLocation, job.get_remote_location())
         assert job.get_phase() == phase, \
             "phase, expected: %s, found: %s" % (phase,
                                                 job.get_phase())
@@ -90,8 +91,8 @@ class TestJob(unittest.TestCase):
             "outputFile, expected: %s, found: %s" % (outputFile,
                                                      job.get_output_file())
         assert job.get_response_status() == responseStatus, \
-            "responseStatus, expected: %s, found: %s" % (responseStatus,
-                                                         job.get_response_status())
+            "responseStatus, expected: %s, found: %s" % \
+            (responseStatus, job.get_response_status())
         assert job.get_response_msg() == responseMsg, \
             "responseMsg, expected: %s, found: %s" % (responseMsg,
                                                       job.get_response_msg())
@@ -111,11 +112,11 @@ class TestJob(unittest.TestCase):
             "endTime, expected: %s, found: %s" % (endTime,
                                                   job.get_end_time())
         assert job.get_creation_time() == creationTime, \
-            "creationTime, expected: %s, found: %s" % (creationTime,
-                                                       job.get_creation_time())
+            "creationTime, expected: %s, found: %s" % \
+            (creationTime, job.get_creation_time())
         assert job.get_execution_duration() == executionDuration, \
-            "executionDuration, expected: %s, found: %s" % (executionDuration,
-                                                            job.get_execution_duration())
+            "executionDuration, expected: %s, found: %s" % \
+            (executionDuration, job.get_execution_duration())
         assert job.get_destruction() == destruction, \
             "destruction, expected: %s, found: %s" % (destruction,
                                                       job.get_destruction())
@@ -141,7 +142,7 @@ class TestJob(unittest.TestCase):
         responseCheckPhase.set_message("ERROR")
         responseCheckPhase.set_data(method='GET',
                                     context=None,
-                                    body='FINISHED',
+                                    body='COMPLETED',
                                     headers=None)
         waitRequest = "async/" + str(jobid) + "/phase"
         connHandler = DummyConnHandler()
@@ -159,9 +160,9 @@ class TestJob(unittest.TestCase):
         jobContentFileName = data_path('result_1.vot')
         jobContent = utils.read_file_content(jobContentFileName)
         responseGetData.set_data(method='GET',
-                                context=None,
-                                body=jobContent,
-                                headers=None)
+                                 context=None,
+                                 body=jobContent,
+                                 headers=None)
         dataRequest = "async/" + str(jobid) + "/results/result"
         connHandler.set_response(dataRequest, responseGetData)
 
@@ -178,7 +179,7 @@ class TestJob(unittest.TestCase):
         for cn in ['alpha', 'delta', 'source_id', 'table1_oid']:
             if cn not in res.colnames:
                 self.fail(cn + " column name not found" + str(res.colnames))
-      
+
     def test_job_get_results_file(self):
         anon = auth.AnonAuthMethod()
         job = Job(async_job=True)
@@ -206,9 +207,9 @@ class TestJob(unittest.TestCase):
         jobContentFileName = data_path('result_1.vot')
         jobContent = utils.read_file_content(jobContentFileName)
         responseGetData.set_data(method='GET',
-                                context=None,
-                                body=jobContent,
-                                headers=None)
+                                 context=None,
+                                 body=jobContent,
+                                 headers=None)
         dataRequest = "async/" + str(jobid) + "/results/result"
         connHandler.set_response(dataRequest, responseGetData)
 
@@ -253,9 +254,9 @@ class TestJob(unittest.TestCase):
         jobContentFileName = data_path('result_1.vot')
         jobContent = utils.read_file_content(jobContentFileName)
         responseGetData.set_data(method='GET',
-                                context=None,
-                                body=jobContent,
-                                headers=None)
+                                 context=None,
+                                 body=jobContent,
+                                 headers=None)
         dataRequest = "async/" + str(jobid) + "/results/result"
         connHandler.set_response(dataRequest, responseGetData)
 
@@ -284,7 +285,7 @@ class TestJob(unittest.TestCase):
         req = "async/12345/redirect"
         connHandler.set_response(req, redirectResultsJob)
         job.save_results(authentication=cert)
-        res=connHandler.table
+        res = connHandler.table
         assert len(res) == 3, \
             "Num rows. Expected %d, found %d" % (3, len(res))
         assert len(res.columns) == 4, \
@@ -297,3 +298,4 @@ class TestJob(unittest.TestCase):
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
+

@@ -26,12 +26,13 @@ __all__ = ['TapConn']
 
 CONTENT_TYPE_POST_DEFAULT = "application/x-www-form-urlencoded"
 
+
 class TapConn(object):
     """TAP plus connection class
     Provides low level HTTP connection capabilities
     """
-    def __init__(self, ishttps, host, server_context, tap_context=None, port=80,
-                 sslport=443, connhandler=None):
+    def __init__(self, ishttps, host, server_context, tap_context=None,
+                 port=80, sslport=443, connhandler=None):
         """Constructor
 
         Parameters
@@ -98,7 +99,8 @@ class TapConn(object):
     def __get_tap_context(self, listName):
         return self.__tapContext + "/" + listName
 
-    def execute_get(self, subcontext, verbose=False, otherlocation=None, authentication=None):
+    def execute_get(self, subcontext, verbose=False,
+                    otherlocation=None, authentication=None):
         """Executes a GET request
         The connection is done through HTTP
 
@@ -110,8 +112,9 @@ class TapConn(object):
         verbose : bool, optional, default 'False'
             flag to display information about the process
         otherlocation: str, optional
-            when redirecting the url might not be in the same context as the TAP service
-            so otherlocation is a full url to use in the GET request
+            when redirecting the url might not be in the same context as the
+            TAP service so otherlocation is a full url to use
+            in the GET request
         authentication : AuthMethod object, mandatory, default 'None'
             authentication object to use
 
@@ -126,10 +129,10 @@ class TapConn(object):
             context = otherlocation
 
         if authentication.get_auth_method() == 'netrc':
-            user = authentication.get_auth('CADC_TAP')
+            user = authentication.get_auth(self.__connHost)
             cred = bytes(user[0] + ":" + user[1], encoding='ascii')
             userAndPass = b64encode(cred).decode("ascii")
-            headers = { 'Authorization' : 'Basic %s' %  userAndPass }
+            headers = {'Authorization': 'Basic %s' % userAndPass}
             authHeaders = dict(self.__getHeaders)
             authHeaders.update(headers)
         else:
@@ -141,7 +144,8 @@ class TapConn(object):
         self.__currentStatus = response.status
         return response
 
-    def execute_get_secure(self, subcontext, verbose=False, otherlocation=None, authentication=None):
+    def execute_get_secure(self, subcontext, verbose=False,
+                           otherlocation=None, authentication=None):
         """Executes a GET request
         The connection is done through HTTPS
 
@@ -153,8 +157,9 @@ class TapConn(object):
         verbose : bool, optional, default 'False'
             flag to display information about the process
         otherlocation: str, optional
-            when redirecting the url might not be in the same context as the TAP service
-            so otherlocation is a full url to use in the GET request
+            when redirecting the url might not be in the same context as the
+            TAP service so otherlocation is a full url to use in
+            the GET request
         authentication : AuthMethod object, mandatory, default 'None'
             authentication object to use
 
@@ -162,7 +167,9 @@ class TapConn(object):
         -------
         An HTTPS response object
         """
-        conn = self.__get_connection_secure(verbose, certificate=authentication.get_certificate())
+        conn = self.__get_connection_secure(
+            verbose,
+            certificate=authentication.get_certificate())
         if otherlocation is None:
             context = self.__get_tap_context(subcontext)
         else:
@@ -173,7 +180,8 @@ class TapConn(object):
         self.__currentStatus = response.status
         return response
 
-    def execute_post(self, subcontext, data, content_type=CONTENT_TYPE_POST_DEFAULT, 
+    def execute_post(self, subcontext, data,
+                     content_type=CONTENT_TYPE_POST_DEFAULT,
                      verbose=False, authentication=None):
         """Executes a POST request
         The connection is done through HTTP
@@ -185,7 +193,7 @@ class TapConn(object):
             TAP list name
         data : str, mandatory
             POST data
-        content_type: str, optional, default 'application/x-www-form-urlencoded'
+        content_type:str, optional, default 'application/x-www-form-urlencoded'
             HTTP(s) content-type header value
         verbose : bool, optional, default 'False'
             flag to display information about the process
@@ -199,10 +207,10 @@ class TapConn(object):
         conn = self.__get_connection(verbose)
         self.__postHeaders["Content-type"] = content_type
         if authentication.get_auth_method() == 'netrc':
-            user = authentication.get_auth('CADC_TAP')
+            user = authentication.get_auth(self.__connHost)
             cred = bytes(user[0] + ":" + user[1], encoding='ascii')
             userAndPass = b64encode(cred).decode("ascii")
-            headers = { 'Authorization' : 'Basic %s' %  userAndPass }
+            headers = {'Authorization': 'Basic %s' % userAndPass}
             authHeaders = dict(self.__postHeaders)
             authHeaders.update(headers)
         else:
@@ -215,7 +223,8 @@ class TapConn(object):
         self.__currentStatus = response.status
         return response
 
-    def execute_post_secure(self, subcontext, data, content_type=CONTENT_TYPE_POST_DEFAULT, 
+    def execute_post_secure(self, subcontext, data,
+                            content_type=CONTENT_TYPE_POST_DEFAULT,
                             verbose=False, authentication=None):
         """Executes a POST request
         The connection is done through HTTPS
@@ -227,7 +236,7 @@ class TapConn(object):
             TAP list name
         data : str, mandatory
             POST data
-        content_type: str, optional, default 'application/x-www-form-urlencoded'
+        content_type:str, optional, default 'application/x-www-form-urlencoded'
             HTTP(s) content-type header value
         verbose : bool, optional, default 'False'
             flag to display information about the process
@@ -238,7 +247,9 @@ class TapConn(object):
         -------
         An HTTPS response object
         """
-        conn = self.__get_connection_secure(verbose, certificate = authentication.get_certificate())
+        conn = self.__get_connection_secure(
+            verbose,
+            certificate=authentication.get_certificate())
         self.__postHeaders["Content-type"] = content_type
         context = self.__get_tap_context(subcontext)
         conn.request("POST", context, data, self.__postHeaders)
@@ -396,7 +407,7 @@ class TapConn(object):
     def check_launch_response_status(self, response, debug,
                                      expected_response_status):
         """Checks the response status code
-        Returns True if the response status code is the expected_response_status
+        Return True if the response status code is the expected_response_status
 
         Parameters
         ----------
@@ -415,16 +426,18 @@ class TapConn(object):
         isError = False
         if response.status != expected_response_status:
             if debug:
-                print("ERROR: " + str(response.status) + ": " + str(response.reason))
+                print("ERROR: " + str(response.status) + ": " +
+                      str(response.reason))
             isError = True
         return isError
 
     def __get_connection(self, verbose=False):
-        return self.__connectionHandler.get_connection(self.__isHttps,
-                                                       verbose)
+        return self.__connectionHandler.get_connection(self.__isHttps, verbose)
 
     def __get_connection_secure(self, verbose=False, certificate=None):
-        return self.__connectionHandler.get_connection_secure(verbose, certificate=certificate)
+        return self.__connectionHandler.get_connection_secure(
+            verbose,
+            certificate=certificate)
 
     def encode_multipart(self, fields, files):
         """Encodes a multipart form request
@@ -493,4 +506,7 @@ class ConnectionHandler(object):
     def get_connection_secure(self, verbose, certificate=None):
         context = ssl.create_default_context()
         context.load_cert_chain(certificate)
-        return httplib.HTTPSConnection(self.__connHost, self.__connPortSsl, context=context)
+        return httplib.HTTPSConnection(self.__connHost,
+                                       self.__connPortSsl,
+                                       context=context)
+
