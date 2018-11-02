@@ -3,16 +3,11 @@
 =============
 TAP plus
 =============
-
 @author: Juan Carlos Segovia
 @contact: juan.carlos.segovia@sciops.esa.int
-
 European Space Astronomy Centre (ESAC)
 European Space Agency (ESA)
-
 Created on 30 jun. 2016
-
-
 """
 from astroquery.utils.tap import taputils
 
@@ -51,12 +46,9 @@ class DummyConnHandler(object):
     def set_response(self, request, response):
         self.responses[str(request)] = response
 
-    def execute_get(self, request, otherlocation=None):
-        if otherlocation is None:
-            self.request = request
-        else:
-            self.request = "async/12345/redirect"
-        return self.__get_response(self.request)
+    def execute_get(self, request):
+        self.request = request
+        return self.__get_response(request)
 
     def execute_post(self, subcontext, data):
         self.data = data
@@ -109,7 +101,8 @@ class DummyConnHandler(object):
         isError = False
         if response.status != expected_response_status:
             if debug:
-                print("ERROR: " + str(response.status) + ": " + str(response.reason))
+                print("ERROR: " + str(response.status) + ": "
+                       + str(response.reason))
             isError = True
         return isError
 
@@ -126,4 +119,4 @@ class DummyConnHandler(object):
         return self.fileExt
 
     def find_header(self, headers, key):
-        return taputils.taputil_find_header(headers, key)
+return taputils.taputil_find_header(headers, key)

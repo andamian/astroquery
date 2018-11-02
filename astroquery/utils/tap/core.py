@@ -3,16 +3,11 @@
 =============
 TAP plus
 =============
-
 @author: Juan Carlos Segovia
 @contact: juan.carlos.segovia@sciops.esa.int
-
 European Space Astronomy Centre (ESAC)
 European Space Agency (ESA)
-
 Created on 30 jun. 2016
-
-
 """
 from astroquery.utils.tap import taputils
 from astroquery.utils.tap.conn.tapconn import TapConn
@@ -42,7 +37,6 @@ class Tap(object):
                  default_protocol_is_https=False, connhandler=None,
                  verbose=False):
         """Constructor
-
         Parameters
         ----------
         url : str, mandatory if no host is specified, default None
@@ -101,12 +95,10 @@ class Tap(object):
 
     def load_tables(self, verbose=False):
         """Loads all public tables
-
         Parameters
         ----------
         verbose : bool, optional, default 'False'
             flag to display information about the process
-
         Returns
         -------
         A list of table objects
@@ -116,7 +108,6 @@ class Tap(object):
     def __load_tables(self, only_names=False, include_shared_tables=False,
                       verbose=False):
         """Loads all public tables
-
         Parameters
         ----------
         only_names : bool, TAP+ only, optional, default 'False'
@@ -125,7 +116,6 @@ class Tap(object):
             True to include shared tables
         verbose : bool, optional, default 'False'
             flag to display information about the process
-
         Returns
         -------
         A list of table objects
@@ -166,7 +156,6 @@ class Tap(object):
                    dump_to_file=False, upload_resource=None,
                    upload_table_name=None):
         """Launches a synchronous job
-
         Parameters
         ----------
         query : str, mandatory
@@ -184,7 +173,6 @@ class Tap(object):
             resource to be uploaded to UPLOAD_SCHEMA
         upload_table_name: str, required if uploadResource is provided, default None
             resource temporary table name associated to the uploaded resource
-
         Returns
         -------
         A Job object
@@ -257,7 +245,6 @@ class Tap(object):
                          dump_to_file=False, background=False,
                          upload_resource=None, upload_table_name=None):
         """Launches an asynchronous job
-
         Parameters
         ----------
         query : str, mandatory
@@ -278,7 +265,6 @@ class Tap(object):
             resource to be uploaded to UPLOAD_SCHEMA
         upload_table_name: str, required if uploadResource is provided, default None
             resource temporary table name associated to the uploaded resource
-
         Returns
         -------
         A Job object
@@ -333,27 +319,14 @@ class Tap(object):
                     print("Retrieving async. results...")
                 # saveResults or getResults will block (not background)
                 if dump_to_file:
-                    self.__connHandler.dump_to_file(suitableOutputFile, runresponse)
-                raise requests.exceptions.HTTPError(runresponse.reason)
-            else:
-                if verbose:
-                    print("job " + str(jobid) + ", at: " + str(location))
-                job.set_jobid(jobid)
-                job.set_remote_location(location)
-                if not background:
-                    if verbose:
-                        print("Retrieving async. results...")
-                    # saveResults or getResults will block (not background)
-                    if dump_to_file:
-                        job.save_results(verbose)
-                    else:
-                        job.get_results()
-                        print("Query finished.")
+                    job.save_results(verbose)
+                else:
+                    job.get_results()
+                    print("Query finished.")
         return job
 
     def load_async_job(self, jobid=None, name=None, verbose=False):
         """Loads an asynchronous job
-
         Parameters
         ----------
         jobid : str, mandatory if no name is provided, default None
@@ -362,7 +335,6 @@ class Tap(object):
             job name
         verbose : bool, optional, default 'False'
             flag to display information about the process
-
         Returns
         -------
         A Job object
@@ -400,12 +372,10 @@ class Tap(object):
 
     def list_async_jobs(self, verbose=False):
         """Returns all the asynchronous jobs
-
         Parameters
         ----------
         verbose : bool, optional, default 'False'
             flag to display information about the process
-
         Returns
         -------
         A list of Job objects
@@ -444,7 +414,6 @@ class Tap(object):
 
     def save_results(self, job, verbose=False):
         """Saves job results
-
         Parameters
         ----------
         job : Job, mandatory
@@ -467,6 +436,7 @@ class Tap(object):
             "LANG": "ADQL",
             "FORMAT": str(outputFormat),
             "tapclient": str(TAP_CLIENT_ID),
+            "PHASE": "RUN",
             "QUERY": str(query),
             "UPLOAD": ""+str(uploadValue)}
         if name is not None:
@@ -488,22 +458,12 @@ class Tap(object):
             "LANG": "ADQL",
             "FORMAT": str(outputFormat),
             "tapclient": str(TAP_CLIENT_ID),
+            "PHASE": "RUN",
             "QUERY": str(query)}
         if name is not None:
             args['jobname'] = name
         data = self.__connHandler.url_encode(args)
         response = self.__connHandler.execute_post(context, data)
-        if verbose:
-            print(response.status, response.reason)
-            print(response.getheaders())
-        return response
-
-    def __runAsyncJob(self, jobid, verbose):
-        args = {
-            "PHASE": "RUN"}
-        data = self.__connHandler.url_encode(args)
-        jobpath = 'async/' + jobid + '/phase'
-        response = self.__connHandler.execute_post(jobpath, data)
         if verbose:
             print(response.status, response.reason)
             print(response.getheaders())
@@ -611,7 +571,8 @@ class Tap(object):
         return protocol, host, port, serverContext, tapContext
 
     def __str__(self):
-        return ("Created TAP+ (v" + VERSION + ") - Connection: \n" + str(self.__connHandler))
+        return ("Created TAP+ (v"+VERSION+") - Connection: \n" +
+                str(self.__connHandler))
 
 
 class TapPlus(Tap):
@@ -624,7 +585,6 @@ class TapPlus(Tap):
                  default_protocol_is_https=False, connhandler=None,
                  verbose=True):
         """Constructor
-
         Parameters
         ----------
         url : str, mandatory if no host is specified, default None
@@ -660,7 +620,6 @@ class TapPlus(Tap):
     def load_tables(self, only_names=False, include_shared_tables=False,
                     verbose=False):
         """Loads all public tables
-
         Parameters
         ----------
         only_names : bool, TAP+ only, optional, default 'False'
@@ -669,7 +628,6 @@ class TapPlus(Tap):
             True to include shared tables
         verbose : bool, optional, default 'False'
             flag to display information about the process
-
         Returns
         -------
         A list of table objects
@@ -680,14 +638,12 @@ class TapPlus(Tap):
 
     def load_table(self, table, verbose=False):
         """Loads the specified table
-
         Parameters
         ----------
         table : str, mandatory
             full qualified table name (i.e. schema name + table name)
         verbose : bool, optional, default 'False'
             flag to display information about the process
-
         Returns
         -------
         A table object
@@ -710,14 +666,12 @@ class TapPlus(Tap):
 
     def search_async_jobs(self, jobfilter=None, verbose=False):
         """Searches for jobs applying the specified filter
-
         Parameters
         ----------
         jobfilter : JobFilter, optional, default None
             job filter
         verbose : bool, optional, default 'False'
             flag to display information about the process
-
         Returns
         -------
         A list of Job objects
@@ -750,14 +704,12 @@ class TapPlus(Tap):
 
     def remove_jobs(self, jobs_list, verbose=False):
         """Removes the specified jobs
-
         Parameters
         ----------
         jobs_list : str, mandatory
             jobs identifiers to be removed
         verbose : bool, optional, default 'False'
             flag to display information about the process
-
         """
         if jobs_list is None:
             return
@@ -788,7 +740,6 @@ class TapPlus(Tap):
         User and password can be used or a file that contains user name and
         password
         (2 lines: one for user name and the following one for the password)
-
         Parameters
         ----------
         user : str, mandatory if 'file' is not provided, default None
@@ -817,7 +768,6 @@ class TapPlus(Tap):
 
     def login_gui(self, verbose=False):
         """Performs a login using a GUI dialog
-
         Parameters
         ----------
         verbose : bool, optional, default 'False'
@@ -855,7 +805,6 @@ class TapPlus(Tap):
 
     def logout(self, verbose=False):
         """Performs a logout
-
         Parameters
         ----------
         verbose : bool, optional, default 'False'
@@ -885,4 +834,4 @@ class TapPlus(Tap):
         return response
 
     def __getconnhandler(self):
-        return self._Tap__connHandler
+return self._Tap__connHandler
