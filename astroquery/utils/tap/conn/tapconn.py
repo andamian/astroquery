@@ -3,11 +3,16 @@
 =============
 TAP plus
 =============
+
 @author: Juan Carlos Segovia
 @contact: juan.carlos.segovia@sciops.esa.int
+
 European Space Astronomy Centre (ESAC)
 European Space Agency (ESA)
+
 Created on 30 jun. 2016
+
+
 """
 from astroquery.utils.tap.xmlparser import utils
 from astroquery.utils.tap import taputils
@@ -39,6 +44,7 @@ class TapConn(object):
     def __init__(self, ishttps, host, server_context, tap_context=None, port=80,
                  sslport=443, connhandler=None):
         """Constructor
+
         Parameters
         ----------
         ishttps: bool, mandatory
@@ -110,6 +116,7 @@ class TapConn(object):
         """Executes a GET request
         The connection is done through HTTP or HTTPS depending on the login
         status (logged in -> HTTPS)
+
         Parameters
         ----------
         subcontext : str, mandatory
@@ -117,6 +124,7 @@ class TapConn(object):
             TAP list name
         verbose : bool, optional, default 'False'
             flag to display information about the process
+
         Returns
         -------
         An HTTP(s) response object
@@ -134,6 +142,7 @@ class TapConn(object):
         """Executes a POST request
         The connection is done through HTTP or HTTPS depending on the login
         status (logged in -> HTTPS)
+
         Parameters
         ----------
         subcontext : str, mandatory
@@ -145,6 +154,7 @@ class TapConn(object):
             HTTP(s) content-type header value
         verbose : bool, optional, default 'False'
             flag to display information about the process
+
         Returns
         -------
         An HTTP(s) response object
@@ -161,12 +171,14 @@ class TapConn(object):
     def execute_secure(self, subcontext, data):
         """Executes a secure POST request
         The connection is done through HTTPS
+
         Parameters
         ----------
         subcontext : str, mandatory
             context to be added to host+serverContext+tapContext
         data : str, mandatory
             POST data
+
         Returns
         -------
         An HTTPS response object
@@ -182,6 +194,7 @@ class TapConn(object):
 
     def get_response_status(self):
         """Returns the latest connection status
+
         Returns
         -------
         The current (latest) HTTP(s) response status
@@ -190,6 +203,7 @@ class TapConn(object):
 
     def get_response_reason(self):
         """Returns the latest connection reason (message)
+
         Returns
         -------
         The current (latest) HTTP(s) response reason
@@ -198,6 +212,7 @@ class TapConn(object):
 
     def url_encode(self, data):
         """Encodes the provided dictionary
+
         Parameters
         ----------
         data : dictionary, mandatory
@@ -207,12 +222,14 @@ class TapConn(object):
 
     def find_header(self, headers, key):
         """Searches for the specified keyword
+
         Parameters
         ----------
         headers : HTTP(s) headers object, mandatory
             HTTP(s) response headers
         key : str, mandatory
             header key to be searched for
+
         Returns
         -------
         The requested header value or None if the header is not found
@@ -221,6 +238,7 @@ class TapConn(object):
 
     def dump_to_file(self, output, response):
         """Writes the connection response into the specified output
+
         Parameters
         ----------
         output : file, mandatory
@@ -238,9 +256,11 @@ class TapConn(object):
 
     def get_suitable_extension_by_format(self, output_format):
         """Returns the suitable extension for a file based on the output format
+
         Parameters
         ----------
         output_format : output format, mandatory
+
         Returns
         -------
         The suitable file extension based on the output format
@@ -266,10 +286,12 @@ class TapConn(object):
     def get_suitable_extension(self, headers):
         """Returns the suitable extension for a file based on the headers
         received
+
         Parameters
         ----------
         headers : HTTP(s) response headers object, mandatory
             HTTP(s) response headers
+
         Returns
         -------
         The suitable file extension based on the HTTP(s) headers
@@ -299,6 +321,7 @@ class TapConn(object):
     def set_cookie(self, cookie):
         """Sets the login cookie
         When a cookie is set, GET and POST requests are done using HTTPS
+
         Parameters
         ----------
         cookie : str, mandatory
@@ -318,6 +341,7 @@ class TapConn(object):
 
     def get_host_url(self):
         """Returns the host+port+serverContext
+
         Returns
         -------
         A string composed of: 'host:port/server_context'
@@ -327,6 +351,7 @@ class TapConn(object):
 
     def get_host_url_secure(self):
         """Returns the host+portSsl+serverContext
+
         Returns
         -------
         A string composed of: 'host:portSsl/server_context'
@@ -338,6 +363,7 @@ class TapConn(object):
                                      expected_response_status):
         """Checks the response status code
         Returns True if the response status code is the expected_response_status
+
         Parameters
         ----------
         response : HTTP(s) response object, mandatory
@@ -346,6 +372,7 @@ class TapConn(object):
             flag to display information about the process
         expected_response_status : int, mandatory
             expected response status code
+
         Returns
         -------
         'True' if the HTTP(s) response status is the provided
@@ -369,12 +396,14 @@ class TapConn(object):
 
     def encode_multipart(self, fields, files):
         """Encodes a multipart form request
+
         Parameters
         ----------
         fields : dictionary, mandatory
             dictionary with keywords and values
         files : array with key, filename and value, mandatory
             array with key, filename, value
+
         Returns
         -------
         The suitable content-type and the body for the request
@@ -430,4 +459,4 @@ class ConnectionHandler(object):
             return httplib.HTTPConnection(self.__connHost, self.__connPort)
 
     def get_connection_secure(self, verbose):
-return httplib.HTTPSConnection(self.__connHost, self.__connPortSsl)
+        return httplib.HTTPSConnection(self.__connHost, self.__connPortSsl)

@@ -3,11 +3,16 @@
 =============
 TAP plus
 =============
+
 @author: Juan Carlos Segovia
 @contact: juan.carlos.segovia@sciops.esa.int
+
 European Space Astronomy Centre (ESAC)
 European Space Agency (ESA)
+
 Created on 30 jun. 2016
+
+
 """
 from astroquery.utils.tap import taputils
 
@@ -119,4 +124,4 @@ class DummyConnHandler(object):
         return self.fileExt
 
     def find_header(self, headers, key):
-return taputils.taputil_find_header(headers, key)
+        return taputils.taputil_find_header(headers, key)
