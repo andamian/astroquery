@@ -11,5 +11,8 @@ import os
 
 
 def get_pakcage_data():
-    paths = []
+    paths = [os.path.join('data', '*.vot'),
+             os.path.join('data', '*.pem'),
+             os.path.join('data', '*.txt'),
+             ] 
     return {'astroquery.cadc.tap.conn.tests': paths}

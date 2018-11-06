@@ -10,6 +10,7 @@ from __future__ import absolute_import
 import os
 
 def get_package_data():
-    paths = [os.path.join('data', '*.vot')
+    paths = [os.path.join('data', '*.vot'),
+             os.path.join('data', '*.pem')
              ]
     return {'astroquery.cadc.tap.model.tests': paths}
