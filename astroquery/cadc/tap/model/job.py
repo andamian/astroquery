@@ -10,7 +10,6 @@ import requests
 
 from astroquery.cadc.tap.model import modelutils
 from astroquery.cadc.tap.xmlparser import utils
-from astropy.table import Table
 
 __all__ = ['Job']
 
@@ -59,6 +58,7 @@ class Job(object):
         self.__name = None
         self.__quote = None
         self.__parameters = {}
+        self.__errMessage = None
         # default output format
         self.set_output_format('votable')
 
@@ -488,6 +488,25 @@ class Job(object):
         """
         return self.__parameters
 
+    def set_errmessage(self, value):
+        """Sets the job error message
+
+        Parameters
+        ----------
+        value : str, mandatory
+            job error message
+        """
+        self.__errMessage = value
+
+    def get_errmessage(self):
+        """Return the job error message
+ 
+        Returns
+        -------
+        The job error message
+        """
+        return self.__errMessage
+
     def get_data(self):
         """Returns the job results (Astroquery API specification)
         This method will block if the job is asynchronous and the job has not
@@ -517,7 +536,7 @@ class Job(object):
         """
         if self.__results is not None:
             return self.__results
-        outputFormat = self.get_output_format()
+
         # Try to load from server: only async
         if not self.__async:
             # sync: result is in a file
@@ -574,7 +593,7 @@ class Job(object):
                     response = self.__connHandler.execute_get(
                         context, authentication=authentication)
                 if verbose:
-                    print('GET save results ',response.status, response.reason)
+                    print(response.status, response.reason)
                     print(response.getheaders())
 
                 numberOfRedirects = 0
@@ -594,7 +613,7 @@ class Job(object):
                             authentication=authentication)
                     numberOfRedirects += 1
                     if verbose:
-                        print('GET save results redirect ', response.status, response.reason)
+                        print(response.status, response.reason)
                         print(response.getheaders())
                 isError = self.__connHandler.check_launch_response_status(
                     response,
@@ -636,8 +655,31 @@ class Job(object):
     def __load_async_job_results(self, authentication=None, debug=False):
         wjResponse, wjData = self.wait_for_job_end(authentication)
         if wjData != 'COMPLETED':
-            raise requests.exceptions.HTTPError(
-                'Error running query, PHASE: '+wjData)
+            if wjData == 'ERROR':
+                if self.is_async() is True:
+                    subcontext = 'async/' + self.get_jobid()
+                else:
+                    subcontext = 'sync/' + self.get_jobid()
+                if authentication.get_auth_method() == 'certificate':
+                    errresponse = self.__connHandler.execute_get_secure(
+                        subcontext,
+                        authentication=authentication)
+                else:
+                    errresponse = self.__connHandler.execute_get(
+                        subcontext,
+                        authentication=authentication)
+                errinfo = errresponse.read()
+                strtpos = errinfo.decode().find('<uws:message>')
+                endpos = errinfo.decode().find('</uws:message>')
+                if strtpos < 0 or endpos < 0:
+                    raise requests.exceptions.HTTPError(
+                        'Error running query, PHASE: '+wjData)
+                else:
+                    message = errinfo.decode()[strtpos+13:endpos]
+                    raise requests.exceptions.HTTPError(message)
+            else:
+                raise requests.exceptions.HTTPError(
+                    'Error running query, PHASE: '+wjData)
         if authentication.get_auth_method() == 'netrc':
             subContext = "auth-async/" + str(self.__jobid) + "/results/result"
         else:

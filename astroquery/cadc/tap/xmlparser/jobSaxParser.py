@@ -24,11 +24,12 @@ UWS_DESTRUCTION = "uws:destruction"
 UWS_LOCATIONID = "uws:locationid"
 UWS_NAME = "uws:name"
 UWS_PARAMETER = "uws:parameter"
+UWS_MESSAGE = "uws:message"
 
 VALID_ITEMS = [UWS_JOBID, UWS_RUNID, UWS_OWNERID, UWS_PHASE, UWS_QUOTE,
                UWS_START_TIME, UWS_END_TIME, UWS_CREATION_TIME,
                UWS_EXECUTION_DURATION, UWS_DESTRUCTION, UWS_LOCATIONID,
-               UWS_NAME, UWS_PARAMETER]
+               UWS_NAME, UWS_PARAMETER, UWS_MESSAGE]
 
 
 class JobSaxParser(xml.sax.ContentHandler):
@@ -129,4 +130,6 @@ class JobSaxParser(xml.sax.ContentHandler):
             self.__job.set_destruction(value)
         elif UWS_PARAMETER == nameLower:
             self.__job.set_parameter(self.__paramKey, value)
+        elif UWS_MESSAGE == nameLower:
+            self.__job.set_errmessage(value)
 

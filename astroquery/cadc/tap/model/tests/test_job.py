@@ -194,7 +194,7 @@ class TestJob(unittest.TestCase):
         responseCheckPhase.set_message("OK")
         responseCheckPhase.set_data(method='GET',
                                     context=None,
-                                    body='FINISHED',
+                                    body='COMPLETED',
                                     headers=None)
         waitRequest = "async/" + str(jobid) + "/phase"
         connHandler = DummyConnHandler()
@@ -236,7 +236,7 @@ class TestJob(unittest.TestCase):
         responseCheckPhase.set_message("ERROR")
         responseCheckPhase.set_data(method='GET',
                                     context=None,
-                                    body='FINISHED',
+                                    body='COMPLETED',
                                     headers=None)
         waitRequest = "async/" + str(jobid) + "/phase"
         connHandler = DummyConnHandler()

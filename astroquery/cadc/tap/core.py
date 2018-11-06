@@ -187,8 +187,8 @@ class Tap(object):
         operation : str, mandatory
             'sync' or 'async' to run a synchronous or asynchronous job
         output_file : str, optional, default None
-            file name where the results are saved if saveToFile is True.
-            If this parameter is not provided, the datetime is used instead
+            file name where the results are saved if dumpToFile is True.
+            If this parameter is not provided, the jobid is used instead
         output_format : str, optional, default 'votable'
             results format
         verbose : bool, optional, default 'False'
@@ -258,6 +258,7 @@ class Tap(object):
                 if verbose:
                     print("Redirect to %s", location)
                 subcontext = self.__extract_sync_subcontext(location)
+                jobid = self.__getJobId(location, operation)
                 if authentication.get_auth_method() == 'certificate':
                     response = self.__connHandler.execute_get_secure(
                         subcontext,
@@ -268,6 +269,24 @@ class Tap(object):
                         subcontext,
                         otherlocation=location,
                         authentication=authentication)
+                if response.status == 400 or response.status == 500:
+                    pos = subcontext.rfind('/')
+                    subcontext = subcontext[:pos]
+                    if authentication.get_auth_method() == 'certificate':
+                        errresponse = self.__connHandler.execute_get_secure(
+                            subcontext,
+                            authentication=authentication)
+                    else:
+                        errresponse = self.__connHandler.execute_get(
+                            subcontext,
+                            authentication=authentication)
+                    # parse job
+                    jsp = JobSaxParser(async_job=False)
+                    errjob = jsp.parseData(errresponse)[0]
+                    errjob.set_connhandler(self.__connHandler)
+                    raise requests.exceptions.HTTPError(
+                        errjob.get_errmessage())
+                    
         if operation == 'sync':
             code = 200
         else:
@@ -283,7 +302,7 @@ class Tap(object):
                   query=query,
                   connhandler=self.__connHandler)
         suitableOutputFile = self.__getSuitableOutputFile(
-            job.is_async(),
+            False,
             output_file,
             response.getheaders(),
             isError,
@@ -304,7 +323,8 @@ class Tap(object):
                     self.__connHandler.save_to_file(suitableOutputFile,
                                                     response)
                 else:
-                    results = utils.read_http_response(response, output_format)
+                    results = utils.read_http_response(response,
+                                                       output_format)
                     job.set_results(results)
                 if verbose:
                     print("Query finished.")
@@ -313,7 +333,7 @@ class Tap(object):
                 location = self.__connHandler.find_header(
                     response.getheaders(),
                     "location")
-                jobid = self.__getJobId(location)
+                jobid = self.__getJobId(location, operation)
                 runresponse = self.__runAsyncQuery(
                     jobid,
                     verbose,
@@ -345,17 +365,13 @@ class Tap(object):
                                 print("Query finished.")
         return job
 
-    def load_async_job(self, jobid=None, output_file=None,
-                       verbose=False, authentication=None):
+    def load_async_job(self, jobid=None, verbose=False, authentication=None):
         """Loads an asynchronous job
 
         Parameters
         ----------
         jobid : str, mandatory if no name is provided, default None
             job identifier
-        output_file : str, optional, default None
-            file name where the results are saved if saveToFile is True.
-            If this parameter is not provided, the datetime is used instead
         verbose : bool, optional, default 'False'
             flag to display information about the process
         authentication : AuthMethod object, mandatory, default 'None'
@@ -399,15 +415,6 @@ class Tap(object):
         jsp = JobSaxParser(async_job=True)
         job = jsp.parseData(response)[0]
         job.set_connhandler(self.__connHandler)
-        suitableOutputFile = self.__getSuitableOutputFile(
-            job.is_async(),
-            output_file,
-            response.getheaders(),
-            isError,
-            job.get_parameter('FORMAT'))
-        job.set_output_file(suitableOutputFile)
-        job.set_output_format(job.get_parameter('FORMAT'))
-
         # load resulst
         job.get_results(verbose, authentication=authentication)
         return job
@@ -481,7 +488,10 @@ class Tap(object):
                 'Authentication Required')
         job.save_results(verbose=verbose, authentication=authentication)
 
-    def __getJobId(self, location):
+    def __getJobId(self, location, operation):
+        if operation == 'sync':
+            pos = location.rfind('/')
+            location = location[:pos]            
         pos = location.rfind('/')+1
         jobid = location[pos:]
         return jobid
