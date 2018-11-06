@@ -62,7 +62,7 @@ class ConnTest(unittest.TestCase):
             ('None', str(r.get_body()))
 
     def test_get_netrc(self):
-        netrc = auth.NetrcAuthMethod(filename=data_path('netrc.py'))
+        netrc = auth.NetrcAuthMethod(filename=data_path('netrc.txt'))
         conn = DummyConn("http")
         conn.response.status = 222
         host = "testHost"
@@ -188,7 +188,7 @@ class ConnTest(unittest.TestCase):
             (data, str(r.get_body()))
 
     def test_post_netrc(self):
-        netrc = auth.NetrcAuthMethod(filename=data_path('netrc.py'))
+        netrc = auth.NetrcAuthMethod(filename=data_path('netrc.txt'))
         conn = DummyConn('http')
         conn.response.status = 111
         host = "testHost"

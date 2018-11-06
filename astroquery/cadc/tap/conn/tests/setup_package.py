@@ -10,7 +10,7 @@ from __future__ import absolute_import
 import os
 
 
-def get_pakcage_data():
+def get_package_data():
     paths = [os.path.join('data', '*.vot'),
              os.path.join('data', '*.pem'),
              os.path.join('data', '*.txt'),
