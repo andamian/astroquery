@@ -43,7 +43,7 @@ class DummyTapHandler(object):
                 # check value
                 if self.__parameters[key] != parameters[key]:
                     raise Exception("Wrong '%s' parameter value for method '%s'. \
-                    Found: '%s'. Expected: '%s'",  (
+                    Found: '%s'. Expected: '%s'", (
                         method_name,
                         key,
                         self.__parameters[key],
