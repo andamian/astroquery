@@ -75,4 +75,3 @@ def set_top_in_query(query, top):
             p = q.find("SELECT ")
             nq = query[0:p+7] + " TOP " + str(top) + " " + query[p+7:]
         return nq
-

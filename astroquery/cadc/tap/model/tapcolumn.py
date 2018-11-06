@@ -187,4 +187,3 @@ class TapColumn(object):
             "\nDataType: " + str(self.__datatype) + \
             "\nArraySize: " + str(self.__arraysize) + \
             "\nFlag: " + str(self.__flag)
-

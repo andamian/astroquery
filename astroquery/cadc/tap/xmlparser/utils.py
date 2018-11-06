@@ -57,4 +57,3 @@ def read_file_content(filePath):
     fileContent = fileHandler.read()
     fileHandler.close()
     return fileContent
-

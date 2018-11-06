@@ -116,4 +116,3 @@ class AnonAuthMethod(AuthMethod):
         Inizialize
         """
         super(AnonAuthMethod, self).__init__('anon')
-

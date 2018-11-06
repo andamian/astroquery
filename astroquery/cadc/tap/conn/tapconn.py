@@ -509,4 +509,3 @@ class ConnectionHandler(object):
         return httplib.HTTPSConnection(self.__connHost,
                                        self.__connPortSsl,
                                        context=context)
-

@@ -92,4 +92,3 @@ class JobListSaxParser(xml.sax.ContentHandler):
         if self.__check_item_id(UWS_PHASE, name):
             self.__job.set_phase(self.__create_string_from_buffer())
             self.__status = READING_JOB
-

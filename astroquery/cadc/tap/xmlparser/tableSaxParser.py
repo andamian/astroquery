@@ -167,4 +167,3 @@ class TableSaxParser(xml.sax.ContentHandler):
 
     def get_tables(self):
         return self.__tables
-

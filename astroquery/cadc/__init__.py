@@ -5,10 +5,6 @@ CADC TAP plus
 =============
 
 """
-
-from astroquery.cadc.tap.core import TapPlus
-
 from .core import Cadc, CadcTAP
 
 __all__ = ['Cadc', 'CadcTAP']
-

@@ -8,7 +8,6 @@ TAP plus
 import time
 import requests
 
-from astroquery.cadc.tap.model import modelutils
 from astroquery.cadc.tap.xmlparser import utils
 
 __all__ = ['Job']
@@ -500,7 +499,7 @@ class Job(object):
 
     def get_errmessage(self):
         """Return the job error message
- 
+
         Returns
         -------
         The job error message
@@ -741,4 +740,3 @@ class Job(object):
             "\nOwner: " + str(self.__ownerid) + \
             "\nOutput file: " + str(self.__outputFile) + \
             "\nResults: " + str(result)
-

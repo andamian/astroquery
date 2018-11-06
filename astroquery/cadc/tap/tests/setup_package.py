@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 import os
 
+
 # setup paths to the test data
 # can specify a single file or a list of files
 def get_package_data():

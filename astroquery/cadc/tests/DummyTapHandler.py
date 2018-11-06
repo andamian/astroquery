@@ -103,4 +103,3 @@ class DummyTapHandler(object):
         self.__parameters['verbose'] = verbose
         self.__parameters['authentication'] = authentication
         return None
-

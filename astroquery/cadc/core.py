@@ -10,6 +10,7 @@ from astroquery.cadc.tap import TapPlus
 
 __all__ = ['Cadc', 'CadcTAP']
 
+
 class CadcTAP(object):
     """
     Proxy class to default TapPlus object (pointing to CADA Archive)
@@ -21,29 +22,30 @@ class CadcTAP(object):
         Parameters
         ----------
         url : str, optional, default 'None;
-            a url to use instead of the default 
+            a url to use instead of the default
         tap_plus_handler : TAP/TAP+ object, optional, default 'None'
             connection to use instead of the default one created
         verbose : bool, optional, default 'False'
             flag to display information about the process
- 
+
         Returns
         -------
         CadcTAP object
         """
         if tap_plus_handler is None:
             if url is None:
-                self.__cadctap = TapPlus(url="http://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/tap",
-                                         verbose=verbose)
+                self.__cadctap = TapPlus(
+                    url="http://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/tap",
+                    verbose=verbose)
             else:
                 self.__cadctap = TapPlus(url=url, verbose=verbose)
         else:
             self.__cadctap = tap_plus_handler
 
-    def get_tables(self, only_names=False, verbose=False,  authentication=None):
+    def get_tables(self, only_names=False, verbose=False, authentication=None):
         """
         Gets all public tables
-        
+
         Parameters
         ----------
         only_names : bool, TAP+ only, optional, default 'False'
@@ -64,7 +66,7 @@ class CadcTAP(object):
     def get_table(self, table, verbose=False, authentication=None):
         """
         Gets the specified table
-        
+
         Parameters
         ----------
         table : str, mandatory
@@ -78,11 +80,14 @@ class CadcTAP(object):
         -------
         A table object
         """
-        return self.__cadctap.get_table(table, verbose, authentication=authentication)
+        return self.__cadctap.get_table(table,
+                                        verbose,
+                                        authentication=authentication)
 
-    def run_query(self, query, operation, output_file=None, output_format="votable", 
-                  verbose=False, save_to_file=False, background=False,
-                  upload_resource=None, upload_table_name=None, authentication=None):
+    def run_query(self, query, operation, output_file=None,
+                  output_format="votable", verbose=False, save_to_file=False,
+                  background=False, upload_resource=None,
+                  upload_table_name=None, authentication=None):
         """
         Runs a query
 
@@ -90,7 +95,7 @@ class CadcTAP(object):
         ----------
         query : str, mandatory
             query to be executed
-        operation : str, mandatory, 
+        operation : str, mandatory,
             'sync' or 'async' to run a synchronous or asynchronous job
         output_file : str, optional, default None
             file name where the results are saved if dumpToFile is True.
@@ -102,21 +107,23 @@ class CadcTAP(object):
         save_to_file : bool, optional, default 'False'
             if True, the results are saved in a file instead of using memory
         background : bool, optional, default 'False'
-            when the job is executed in asynchronous mode, this flag specifies whether
-            the execution will wait until results are available
+            when the job is executed in asynchronous mode,
+            this flag specifies whether the execution will wait until results
+            are available
         upload_resource: str, optional, default None
             resource to be uploaded to UPLOAD_SCHEMA
-        upload_table_name: str, required if uploadResource is provided, default None
+        upload_table_name: str, required if uploadResource is provided,
+            default None
             resource temporary table name associated to the uploaded resource
         authentication : AuthMethod object, mandatory, default 'None'
-            authentication object to use 
+            authentication object to use
 
         Returns
         -------
         A Job object
         """
         return self.__cadctap.run_query(query,
-                                        operation, 
+                                        operation,
                                         output_file=output_file,
                                         output_format=output_format,
                                         verbose=verbose,
@@ -129,7 +136,7 @@ class CadcTAP(object):
     def load_async_job(self, jobid, verbose=False, authentication=None):
         """
         Loads an asynchronous job
-       
+
         Parameters
         ----------
         jobid : str, mandatory
@@ -143,12 +150,14 @@ class CadcTAP(object):
         -------
         A Job object
         """
-        return self.__cadctap.load_async_job(jobid, verbose, authentication=authentication)
+        return self.__cadctap.load_async_job(jobid,
+                                             verbose,
+                                             authentication=authentication)
 
     def list_async_jobs(self, verbose=False, authentication=None):
         """
         Returns all the asynchronous jobs
-        
+
         Parameters
         ----------
         verbose : bool, optional, default 'False'
@@ -160,12 +169,13 @@ class CadcTAP(object):
         -------
         A list of Job objects
         """
-        return self.__cadctap.list_async_jobs(verbose, authentication=authentication)
+        return self.__cadctap.list_async_jobs(verbose,
+                                              authentication=authentication)
 
     def save_results(self, job, verbose=False, authentication=None):
         """
         Saves job results
-        
+
         Parameters
         ----------
         job : Job, mandatory
@@ -175,6 +185,9 @@ class CadcTAP(object):
         authentication : AuthMethod object, mandatory, default 'None'
             authentication object to use
         """
-        return self.__cadctap.save_results(job, verbose, authentication=authentication)
+        return self.__cadctap.save_results(job,
+                                           verbose,
+                                           authentication=authentication)
+
 
 Cadc = CadcTAP()

@@ -89,4 +89,3 @@ class XmlParserTest(unittest.TestCase):
         o = job.get_ownerid()
         assert str(o) == str(jobOwner), \
             "Expected job owner: %s, found %s" % (jobOwner, o)
-

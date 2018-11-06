@@ -56,7 +56,7 @@ class Tap(object):
         self.__internalInit()
         if url is not None:
             protocol, host, port, server_context, \
-            tap_context = self.__parseUrl(url)
+                tap_context = self.__parseUrl(url)
             if protocol == "http":
                 self.__connHandler = TapConn(False,
                                              host,
@@ -132,10 +132,8 @@ class Tap(object):
         else:
             table = 'tables'
         flags = ""
-        addedItem = False
         if only_names:
             flags = "only_tables=true"
-            addedItem = True
         if verbose:
             print("Retrieving tables...")
         if flags != "":
@@ -286,7 +284,7 @@ class Tap(object):
                     errjob.set_connhandler(self.__connHandler)
                     raise requests.exceptions.HTTPError(
                         errjob.get_errmessage())
-                    
+
         if operation == 'sync':
             code = 200
         else:
@@ -491,7 +489,7 @@ class Tap(object):
     def __getJobId(self, location, operation):
         if operation == 'sync':
             pos = location.rfind('/')
-            location = location[:pos]            
+            location = location[:pos]
         pos = location.rfind('/')+1
         jobid = location[pos:]
         return jobid
@@ -778,4 +776,3 @@ class TapPlus(Tap):
 
     def __getconnhandler(self):
         return self._Tap__connHandler
-

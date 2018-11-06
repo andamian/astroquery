@@ -7,19 +7,10 @@ Cadc TAP plus
 """
 import unittest
 import os
-import pytest
 
 from astroquery.cadc.core import CadcTAP
 from astroquery.cadc import auth
 from astroquery.cadc.tests.DummyTapHandler import DummyTapHandler
-from astroquery.cadc.tap.conn.tests.DummyConnHandler import DummyConnHandler
-from astroquery.cadc.tap.conn.tests.DummyResponse import DummyResponse
-import astropy.units as u
-from astropy.coordinates.sky_coordinate import SkyCoord
-from astropy.units import Quantity
-import numpy as np
-from astroquery.cadc.tap.xmlparser import utils
-from astroquery.cadc.tap.core import TapPlus
 
 
 def data_path(filename):
@@ -237,7 +228,7 @@ class TestTap(unittest.TestCase):
         tap.save_results(job, verbose=True, authentication=cert)
         dummyTapHandler.check_call('save_results', parameters)
 
+
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
-

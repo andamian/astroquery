@@ -26,7 +26,8 @@ def read_results_table_from_file(file_name, output_format, correct_units=True):
                 col = result[cn]
                 if isinstance(col.unit, u.UnrecognizedUnit):
                     try:
-                        col.unit = u.Unit(col.unit.name.replace(".", " ").replace("'", ""))
+                        col.unit = u.Unit(
+                            col.unit.name.replace(".", " ").replace("'", ""))
                     except Exception as ex:
                         pass
                 elif isinstance(col.unit, str):

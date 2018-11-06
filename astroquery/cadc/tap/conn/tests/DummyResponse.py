@@ -67,4 +67,3 @@ class DummyResponse(object):
 
     def getheaders(self):
         return self.headers
-

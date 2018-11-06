@@ -389,7 +389,7 @@ class ConnTest(unittest.TestCase):
         assert sbodyTest == sbody or sbodyTest == sbodySecond, \
             "Body, expected:\n %s,\n\n\n\n found:\n %s" % (sbody, sbodyTest)
 
+
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
-

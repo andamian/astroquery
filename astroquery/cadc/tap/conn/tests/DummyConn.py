@@ -56,4 +56,3 @@ class DummyHttpConn(object):
 
     def getresponse(self):
         return self.response
-

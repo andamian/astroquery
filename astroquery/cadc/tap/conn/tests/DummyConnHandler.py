@@ -133,4 +133,3 @@ class DummyConnHandler(object):
 
     def find_header(self, headers, key):
         return taputils.taputil_find_header(headers, key)
-

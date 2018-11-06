@@ -132,4 +132,3 @@ class JobSaxParser(xml.sax.ContentHandler):
             self.__job.set_parameter(self.__paramKey, value)
         elif UWS_MESSAGE == nameLower:
             self.__job.set_errmessage(value)
-
