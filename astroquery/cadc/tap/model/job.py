@@ -7,6 +7,7 @@ TAP plus
 """
 import time
 import requests
+import astroquery.cadc.tap.xmlparser
 
 from astroquery.cadc.tap.xmlparser import utils
 
@@ -667,15 +668,14 @@ class Job(object):
                     errresponse = self.__connHandler.execute_get(
                         subcontext,
                         authentication=authentication)
-                errinfo = errresponse.read()
-                strtpos = errinfo.decode().find('<uws:message>')
-                endpos = errinfo.decode().find('</uws:message>')
-                if strtpos < 0 or endpos < 0:
-                    raise requests.exceptions.HTTPError(
-                        'Error running query, PHASE: '+wjData)
-                else:
-                    message = errinfo.decode()[strtpos+13:endpos]
-                    raise requests.exceptions.HTTPError(message)
+                JobSaxParser = astroquery.cadc.tap.xmlparser.jobSaxParser. \
+                    JobSaxParser
+                # parse job
+                jsp = JobSaxParser(async_job=False)
+                errjob = jsp.parseData(errresponse)[0]
+                errjob.set_connhandler(self.__connHandler)
+                raise requests.exceptions.HTTPError(
+                    errjob.get_errmessage())
             else:
                 raise requests.exceptions.HTTPError(
                     'Error running query, PHASE: '+wjData)

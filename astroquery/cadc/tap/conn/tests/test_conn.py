@@ -7,7 +7,6 @@ TAP plus
 """
 import unittest
 import os
-import time
 
 from astroquery.cadc import auth
 from astroquery.cadc.tap.conn.tapconn import TapConn
