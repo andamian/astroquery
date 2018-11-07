@@ -208,7 +208,7 @@ class TapConn(object):
         self.__postHeaders["Content-type"] = content_type
         if authentication.get_auth_method() == 'netrc':
             user = authentication.get_auth(self.__connHost)
-            cred = bytes(user[0] + ":" + user[1], encoding='ascii')
+            cred = (user[0] + ":" + user[1]).encode('ascii')
             userAndPass = b64encode(cred).decode("ascii")
             headers = {'Authorization': 'Basic %s' % userAndPass}
             authHeaders = dict(self.__postHeaders)
