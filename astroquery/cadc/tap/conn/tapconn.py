@@ -130,8 +130,8 @@ class TapConn(object):
 
         if authentication.get_auth_method() == 'netrc':
             user = authentication.get_auth(self.__connHost)
-            cred = bytes(user[0] + ":" + user[1], encoding='ascii')
-            userAndPass = b64encode(cred).decode("ascii")
+            cred = (user[0] + ":" + user[1]).encode('ascii')
+            userAndPass = b64encode(cred).decode('ascii')
             headers = {'Authorization': 'Basic %s' % userAndPass}
             authHeaders = dict(self.__getHeaders)
             authHeaders.update(headers)
