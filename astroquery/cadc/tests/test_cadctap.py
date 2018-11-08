@@ -7,7 +7,6 @@ Cadc TAP plus
 """
 import unittest
 import os
-from unittest.mock import patch
 
 from astroquery.cadc.core import CadcTAP
 from astroquery.cadc import auth
@@ -208,11 +207,9 @@ class TestTap(unittest.TestCase):
         tap.list_async_jobs(verbose=True, authentication=cert)
         dummyTapHandler.check_call('list_async_jobs', parameters)
 
-    @patch('getpass.getpass')
-    def test_save_results(self, getpass):
+    def test_save_results(self):
         anon = auth.AnonAuthMethod()
-        netrc = auth.NetrcAuthMethod(username='testuser')
-        getpass.return_value = 'testpass'
+        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         job = '123'
@@ -227,8 +224,8 @@ class TestTap(unittest.TestCase):
         dummyTapHandler.reset()
         parameters['job'] = job
         parameters['verbose'] = True
-        parameters['authentication'] = netrc
-        tap.save_results(job, verbose=True, authentication=netrc)
+        parameters['authentication'] = cert
+        tap.save_results(job, verbose=True, authentication=cert)
         dummyTapHandler.check_call('save_results', parameters)
 
 
