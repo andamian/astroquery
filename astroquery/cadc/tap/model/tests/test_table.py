@@ -26,8 +26,14 @@ class TestTable(unittest.TestCase):
         table.set_schema(schemaName)
         table.set_name(tableName)
         res = table.get_qualified_name()
+        nam = table.get_name()
+        sch = table.get_schema()
         assert res == expected, \
             "Qualified name, expected: %s, found: %s" % (expected, res)
+        assert nam == tableName, \
+            "Qualified name, expected: %s, found: %s" % (tableName, nam)
+        assert sch == schemaName, \
+            "Qualified name, expected: %s, found: %s" % (schemaName, sch)
 
     def test_table_columns(self):
         table = TapTableMeta()

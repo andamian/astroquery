@@ -14,6 +14,7 @@
 	<uws:locationId>anonymous/2016/11/17/1479386030738O</uws:locationId>
 	<uws:name><![CDATA[]]></uws:name>
 	<uws:parameters>
+        <uws:parameter id="LANG">ADQL</uws:parameter>
 	</uws:parameters>
 	<uws:results>
 	</uws:results>
@@ -36,6 +37,9 @@
 	</uws:parameters>
 	<uws:results>
 	</uws:results>
-	<uws:errorSummary xsi:nil="true"/>
+	<uws:errorSummary xsi:nil="true">
+        <uws:message>IllegalArgumentException:findTableForColumnName: Column [x] does not exist.
+        </uws:message>
+        </uws:errorSummary>
 </uws:job>
 </uws:jobs>
