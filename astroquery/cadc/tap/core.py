@@ -413,7 +413,15 @@ class Tap(object):
         jsp = JobSaxParser(async_job=True)
         job = jsp.parseData(response)[0]
         job.set_connhandler(self.__connHandler)
-        # load resulst
+        suitableOutputFile = self.__getSuitableOutputFile(
+            job.is_async(),
+            None,
+            response.getheaders(),
+            isError,
+            job.get_parameter('FORMAT'))
+        job.set_output_file(suitableOutputFile)
+        job.set_output_format(job.get_parameter('FORMAT'))
+        # load results
         job.get_results(verbose, authentication=authentication)
         return job
 

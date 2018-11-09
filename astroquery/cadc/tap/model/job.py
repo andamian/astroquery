@@ -536,7 +536,6 @@ class Job(object):
         """
         if self.__results is not None:
             return self.__results
-
         # Try to load from server: only async
         if not self.__async:
             # sync: result is in a file
@@ -593,7 +592,8 @@ class Job(object):
                     response = self.__connHandler.execute_get(
                         context, authentication=authentication)
                 if verbose:
-                    print(response.status, response.reason)
+                    print('GET save results response',
+                          response.status, response.reason)
                     print(response.getheaders())
 
                 numberOfRedirects = 0
@@ -613,7 +613,8 @@ class Job(object):
                             authentication=authentication)
                     numberOfRedirects += 1
                     if verbose:
-                        print(response.status, response.reason)
+                        print('GET save results redirect response',
+                              response.status, response.reason)
                         print(response.getheaders())
                 isError = self.__connHandler.check_launch_response_status(
                     response,
