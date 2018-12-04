@@ -9,7 +9,6 @@ import unittest
 import os
 
 from astroquery.cadc.core import CadcTAP
-from astroquery.cadc import auth
 from astroquery.cadc.tests.DummyTapHandler import DummyTapHandler
 
 
@@ -21,50 +20,40 @@ def data_path(filename):
 class TestTap(unittest.TestCase):
 
     def test_get_tables(self):
-        anon = auth.AnonAuthMethod()
-        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         # default parameters
         parameters = {}
         parameters['only_names'] = False
         parameters['verbose'] = False
-        parameters['authentication'] = anon
-        tap.get_tables(authentication=anon)
+        tap.get_tables()
         dummyTapHandler.check_call('get_tables', parameters)
         # test with parameters
         dummyTapHandler.reset()
         parameters = {}
         parameters['only_names'] = True
         parameters['verbose'] = True
-        parameters['authentication'] = cert
-        tap.get_tables(True, True, cert)
+        tap.get_tables(True, True)
         dummyTapHandler.check_call('get_tables', parameters)
 
     def test_get_table(self):
-        anon = auth.AnonAuthMethod()
-        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         # default parameters
         parameters = {}
         parameters['table'] = 'table'
         parameters['verbose'] = False
-        parameters['authentication'] = anon
-        tap.get_table('table', authentication=anon)
+        tap.get_table('table')
         dummyTapHandler.check_call('get_table', parameters)
         # test with parameters
         dummyTapHandler.reset()
         parameters = {}
         parameters['table'] = 'table'
         parameters['verbose'] = True
-        parameters['authentication'] = cert
-        tap.get_table('table', verbose=True, authentication=cert)
+        tap.get_table('table', verbose=True)
         dummyTapHandler.check_call('get_table', parameters)
 
-    def test_run_query_sync(self):
-        anon = auth.AnonAuthMethod()
-        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
+    def test_run_query(self):
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         query = "query"
@@ -72,105 +61,40 @@ class TestTap(unittest.TestCase):
         # default parameters
         parameters = {}
         parameters['query'] = query
-        parameters['operation'] = operation
+        parameters['name'] = None
         parameters['output_file'] = None
         parameters['output_format'] = 'votable'
         parameters['verbose'] = False
-        parameters['background'] = False
-        parameters['save_to_file'] = False
+        parameters['dump_to_file'] = False
         parameters['upload_resource'] = None
         parameters['upload_table_name'] = None
-        parameters['authentication'] = anon
-        tap.run_query(query, operation, authentication=anon)
+        tap.run_query(query, operation)
         dummyTapHandler.check_call('run_query', parameters)
         # test with parameters
         dummyTapHandler.reset()
         output_file = 'output'
         output_format = 'format'
         verbose = True
-        background = True
-        save_to_file = True
         upload_resource = 'upload_res'
         upload_table_name = 'upload_table'
-        authentication = cert
         parameters['query'] = query
-        parameters['operation'] = operation
+        parameters['name'] = None
         parameters['output_file'] = output_file
         parameters['output_format'] = output_format
         parameters['verbose'] = verbose
-        parameters['background'] = background
-        parameters['save_to_file'] = save_to_file
+        parameters['dump_to_file'] = True
         parameters['upload_resource'] = upload_resource
         parameters['upload_table_name'] = upload_table_name
-        parameters['authentication'] = authentication
         tap.run_query(query,
                       operation,
                       output_file=output_file,
                       output_format=output_format,
                       verbose=verbose,
-                      background=background,
-                      save_to_file=save_to_file,
                       upload_resource=upload_resource,
-                      upload_table_name=upload_table_name,
-                      authentication=authentication)
-        dummyTapHandler.check_call('run_query', parameters)
-
-    def test_run_query_async(self):
-        anon = auth.AnonAuthMethod()
-        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
-        dummyTapHandler = DummyTapHandler()
-        tap = CadcTAP(tap_plus_handler=dummyTapHandler)
-        query = "query"
-        operation = 'async'
-        # default parameters
-        parameters = {}
-        parameters['query'] = query
-        parameters['operation'] = operation
-        parameters['output_file'] = None
-        parameters['output_format'] = 'votable'
-        parameters['verbose'] = False
-        parameters['save_to_file'] = False
-        parameters['background'] = False
-        parameters['upload_resource'] = None
-        parameters['upload_table_name'] = None
-        parameters['authentication'] = anon
-        tap.run_query(query, operation, authentication=anon)
-        dummyTapHandler.check_call('run_query', parameters)
-        # test with parameters
-        dummyTapHandler.reset()
-        output_file = 'output'
-        output_format = 'format'
-        verbose = True
-        save_to_file = True
-        background = True
-        upload_resource = 'upload_res'
-        upload_table_name = 'upload_table'
-        authentication = cert
-        parameters['query'] = query
-        parameters['operation'] = operation
-        parameters['output_file'] = output_file
-        parameters['output_format'] = output_format
-        parameters['verbose'] = verbose
-        parameters['save_to_file'] = save_to_file
-        parameters['background'] = background
-        parameters['upload_resource'] = upload_resource
-        parameters['upload_table_name'] = upload_table_name
-        parameters['authentication'] = authentication
-        tap.run_query(query,
-                      operation,
-                      output_file=output_file,
-                      output_format=output_format,
-                      verbose=verbose,
-                      save_to_file=save_to_file,
-                      background=background,
-                      upload_resource=upload_resource,
-                      upload_table_name=upload_table_name,
-                      authentication=authentication)
+                      upload_table_name=upload_table_name)
         dummyTapHandler.check_call('run_query', parameters)
 
     def test_load_async_job(self):
-        anon = auth.AnonAuthMethod()
-        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         jobid = '123'
@@ -178,55 +102,84 @@ class TestTap(unittest.TestCase):
         parameters = {}
         parameters['jobid'] = jobid
         parameters['verbose'] = False
-        parameters['authentication'] = anon
-        tap.load_async_job(jobid, authentication=anon)
+        tap.load_async_job(jobid)
         dummyTapHandler.check_call('load_async_job', parameters)
         # test with parameters
         dummyTapHandler.reset()
         parameters['jobid'] = jobid
         parameters['verbose'] = True
-        parameters['authentication'] = cert
-        tap.load_async_job(jobid, verbose=True, authentication=cert)
+        tap.load_async_job(jobid, verbose=True)
         dummyTapHandler.check_call('load_async_job', parameters)
 
     def test_list_async_jobs(self):
-        anon = auth.AnonAuthMethod()
-        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         # default parameters
         parameters = {}
         parameters['verbose'] = False
-        parameters['authentication'] = anon
-        tap.list_async_jobs(authentication=anon)
+        tap.list_async_jobs()
         dummyTapHandler.check_call('list_async_jobs', parameters)
         # test with parameters
         dummyTapHandler.reset()
         parameters['verbose'] = True
-        parameters['authentication'] = cert
-        tap.list_async_jobs(verbose=True, authentication=cert)
+        tap.list_async_jobs(verbose=True)
         dummyTapHandler.check_call('list_async_jobs', parameters)
 
     def test_save_results(self):
-        anon = auth.AnonAuthMethod()
-        cert = auth.CertAuthMethod(certificate=data_path('certificate.pem'))
         dummyTapHandler = DummyTapHandler()
         tap = CadcTAP(tap_plus_handler=dummyTapHandler)
         job = '123'
         # default parameters
         parameters = {}
         parameters['job'] = job
+        parameters['filename'] = 'file.txt'
         parameters['verbose'] = False
-        parameters['authentication'] = anon
-        tap.save_results(job, authentication=anon)
+        tap.save_results(job, 'file.txt')
         dummyTapHandler.check_call('save_results', parameters)
         # test with parameters
         dummyTapHandler.reset()
         parameters['job'] = job
+        parameters['filename'] = 'file.txt'
         parameters['verbose'] = True
-        parameters['authentication'] = cert
-        tap.save_results(job, verbose=True, authentication=cert)
+        tap.save_results(job, 'file.txt', verbose=True)
         dummyTapHandler.check_call('save_results', parameters)
+
+    def test_login(self):
+        dummyTapHandler = DummyTapHandler()
+        tap = CadcTAP(tap_plus_handler=dummyTapHandler)
+        user = 'user'
+        password = 'password'
+        cert = 'cert'
+        # default parameters
+        parameters = {}
+        parameters['user'] = None
+        parameters['password'] = None
+        parameters['certificate_file'] = None
+        parameters['verbose'] = False
+        tap.login(None, None, None)
+        dummyTapHandler.check_call('login', parameters)
+        # test with parameters
+        dummyTapHandler.reset()
+        parameters['user'] = user
+        parameters['password'] = password
+        parameters['certificate_file'] = cert
+        parameters['verbose'] = True
+        tap.login(user, password, cert, verbose=True)
+        dummyTapHandler.check_call('login', parameters)
+
+    def test_logout(self):
+        dummyTapHandler = DummyTapHandler()
+        tap = CadcTAP(tap_plus_handler=dummyTapHandler)
+        # default parameters
+        parameters = {}
+        parameters['verbose'] = False
+        tap.logout(False)
+        dummyTapHandler.check_call('logout', parameters)
+        # test with parameters
+        dummyTapHandler.reset()
+        parameters['verbose'] = True
+        tap.logout(True)
+        dummyTapHandler.check_call('logout', parameters)
 
 
 if __name__ == "__main__":

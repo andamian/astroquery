@@ -6,6 +6,8 @@ Cadc TAP plus
 
 """
 
+from astroquery.cadc.tests.DummyJob import DummyJob
+
 
 class DummyTapHandler(object):
 
@@ -53,53 +55,67 @@ class DummyTapHandler(object):
                                 (str(key), method_name))
         return False
 
-    def get_tables(self, only_names=False, verbose=False, authentication=None):
+    def load_tables(self, only_names=False, verbose=False):
         self.__invokedMethod = 'get_tables'
         self.__parameters['only_names'] = only_names
         self.__parameters['verbose'] = verbose
-        self.__parameters['authentication'] = authentication
         return None
 
-    def get_table(self, table, verbose=False, authentication=None):
+    def load_table(self, table, verbose=False):
         self.__invokedMethod = 'get_table'
         self.__parameters['table'] = table
         self.__parameters['verbose'] = verbose
-        self.__parameters['authentication'] = authentication
         return None
 
-    def run_query(self, query, operation, output_file=None, background=False,
-                  output_format="votable", verbose=False, save_to_file=False,
-                  upload_resource=None, upload_table_name=None,
-                  authentication=None):
+    def launch_job(self, query, name=None, output_file=None,
+                   output_format="votable", verbose=False, dump_to_file=False,
+                   upload_resource=None, upload_table_name=None):
         self.__invokedMethod = 'run_query'
         self.__parameters['query'] = query
-        self.__parameters['operation'] = operation
+        self.__parameters['name'] = name
         self.__parameters['output_file'] = output_file
         self.__parameters['output_format'] = output_format
         self.__parameters['verbose'] = verbose
-        self.__parameters['background'] = background
-        self.__parameters['save_to_file'] = save_to_file
+        self.__parameters['dump_to_file'] = dump_to_file
         self.__parameters['upload_resource'] = upload_resource
         self.__parameters['upload_table_name'] = upload_table_name
-        self.__parameters['authentication'] = authentication
-        return None
 
-    def load_async_job(self, jobid=None, verbose=False, authentication=None):
+        job = DummyJob()
+        job.set_parameter('query', query)
+        job.set_parameter('format', output_format)
+
+        return job
+
+    def load_async_job(self, jobid=None, verbose=False):
         self.__invokedMethod = 'load_async_job'
         self.__parameters['jobid'] = jobid
         self.__parameters['verbose'] = verbose
-        self.__parameters['authentication'] = authentication
         return None
 
-    def list_async_jobs(self, verbose=False, authentication=None):
+    def list_async_jobs(self, verbose=False):
         self.__invokedMethod = 'list_async_jobs'
         self.__parameters['verbose'] = verbose
-        self.__parameters['authentication'] = authentication
-        return None
+        return [DummyJob()]
 
-    def save_results(self, job, verbose=False, authentication=None):
+    def save_results(self, job, filename, verbose=False):
         self.__invokedMethod = 'save_results'
         self.__parameters['job'] = job
+        self.__parameters['filename'] = filename
         self.__parameters['verbose'] = verbose
-        self.__parameters['authentication'] = authentication
         return None
+
+    def login(self, user, password, certificate_file, verbose=False):
+        self.__invokedMethod = 'login'
+        self.__parameters['user'] = user
+        self.__parameters['password'] = password
+        self.__parameters['certificate_file'] = certificate_file
+        self.__parameters['verbose'] = verbose
+        return None
+
+    def logout(self, verbose=False):
+        self.__invokedMethod = 'logout'
+        self.__parameters['verbose'] = verbose
+        return None
+
+    def _TapPlus__getconnhandler(self):
+        return self

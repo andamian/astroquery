@@ -1,3 +1,0 @@
-machine CADC_TAP
-login username
-password password

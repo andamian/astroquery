@@ -1,3 +1,0 @@
-machine testHost
-login test_username
-password test_password

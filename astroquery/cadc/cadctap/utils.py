@@ -49,6 +49,8 @@ def read_http_response(response, outputFormat, correct_units=True):
 def get_suitable_astropy_format(outputFormat):
     if "csv" == outputFormat:
         return "ascii.csv"
+    if "tsv" == outputFormat:
+        return "ascii.fast_tab"
     return outputFormat
 
 
