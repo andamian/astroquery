@@ -13,6 +13,8 @@ import requests
 
 __all__ = ['Cadc', 'CadcTAP']
 
+DEFAULT_URL = 'http://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/tap'
+
 
 class CadcTAP(object):
     """
@@ -38,7 +40,7 @@ class CadcTAP(object):
         if tap_plus_handler is None:
             if url is None:
                 self.__cadctap = TapPlusCadc(
-                    url="http://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/tap",
+                    url=DEFAULT_URL,
                     verbose=verbose)
             else:
                 self.__cadctap = TapPlusCadc(url=url, verbose=verbose)

@@ -369,7 +369,7 @@ class TestTapCadc(unittest.TestCase):
         job = tap.load_async_job(jobid)
 
         assert job.jobid == '1234', "Jobid is wrong"
-        assert job._phase == 'COMPLETED', 'Phase is wrong'    
+        assert job._phase == 'COMPLETED', 'Phase is wrong'
         assert job.startTime == '2016-11-17T13:33:50.755+0100', \
             "Start time is wrong"
         assert job.parameters['LANG'] == 'ADQL', 'LANG is wrong'
