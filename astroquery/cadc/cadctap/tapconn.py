@@ -66,17 +66,10 @@ class TapConnCadc(TapConn):
 
         Parameters
         ----------
-        subcontext : str, mandatory
-            context to be added to host+serverContext+tapContext, usually the
-            TAP list name
+        location : str, mandatory
+            URL to send the request to
         verbose : bool, optional, default 'False'
             flag to display information about the process
-        otherlocation: str, optional
-            when redirecting the url might not be in the same context as the
-            TAP service so otherlocation is a full url to use
-            in the GET request
-        authentication : AuthMethod object, mandatory, default 'None'
-            authentication object to use
 
         Returns
         -------
@@ -99,9 +92,8 @@ class TapConnCadc(TapConn):
         status (logged in -> HTTPS)
         Parameters
         ----------
-        subcontext : str, mandatory
-            context to be added to host+serverContext+tapContext, usually the
-            TAP list name
+        location : str, mandatory
+            URL to send the request to
         data : str, mandatory
             POST data
         content_type: str, optional,
@@ -123,13 +115,15 @@ class TapConnCadc(TapConn):
         return response
 
     def cookies_set(self):
+        """Returns True if the Cookies are in the headers
+        """
         if 'Cookie' in self._TapConn__postHeaders:
             return True
         else:
             return False
 
     def encode_multipart(self, fields, files):
-        """Encodes a multipart form request
+        """Encodes a multipart form request (not using '=' in boundary)
         Parameters
         ----------
         fields : dictionary, mandatory
@@ -185,6 +179,7 @@ class ConnectionHandlerCadc(ConnectionHandler):
                                           self._ConnectionHandler__connPort)
 
     def get_connection_secure(self, verbose):
+        # Prepare the certificate
         context = ssl.create_default_context()
         context.load_cert_chain(self.__certificate)
         return httplib.HTTPSConnection(self._ConnectionHandler__connHost,

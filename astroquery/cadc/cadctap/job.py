@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 """
 =============
-TAP plus
+CadcTAP plus
 =============
 
 """
@@ -17,6 +17,7 @@ __all__ = ['Job']
 class JobCadc(Job):
     """Job class
     """
+
     def __init__(self, async_job, query=None, connhandler=None):
         """Constructor
 
@@ -89,6 +90,8 @@ class JobCadc(Job):
 
         Parameters
         ----------
+        filename : str, mandatory
+            name of the file to save the output to
         verbose : bool, optional, default 'False'
             flag to display information about the process
         """

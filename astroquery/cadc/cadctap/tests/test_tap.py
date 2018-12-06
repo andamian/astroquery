@@ -124,18 +124,22 @@ class TestTapCadc(unittest.TestCase):
                                     None,
                                     np.int32)
 
-    def test_launch_multipart_sync_job(self):
+    def test_launch_multipart_async_job(self):
         connHandler = DummyConnHandlerCadc()
         tap = TapPlusCadc("http://test:1111/tap", connhandler=connHandler)
+        jobid = '1234'
         responseLaunchJob = DummyResponse()
         responseLaunchJob.set_status_code(200)
         responseLaunchJob.set_message("OK")
         jobDataFile = data_path('job_1.vot')
         jobData = utils.read_file_content(jobDataFile)
+        responseHeaders = [
+                ['location', 'http://test:1111/tap/async/' + jobid]
+            ]
         responseLaunchJob.set_data(method='POST',
                                    context=None,
                                    body=jobData,
-                                   headers=None)
+                                   headers=responseHeaders)
         query = 'select top 5 * from table'
         upload_name = 'testtable'
         upload_resource = data_path('test_tables.xml')
@@ -155,13 +159,54 @@ class TestTapCadc(unittest.TestCase):
             "QUERY": str(q),
             "UPLOAD": str(upload)}
         sortedKey = taputils.taputil_create_sorted_dict_key(dictTmp)
-        jobRequest = "sync?" + sortedKey
+        jobRequest = "async?" + sortedKey
         connHandler.set_response(jobRequest, responseLaunchJob)
 
-        job = tap.launch_job(query, upload_resource=upload_resource,
-                             upload_table_name=upload_name)
+        # Phase response
+        responsePhase = DummyResponse()
+        responsePhase.set_status_code(303)
+        responsePhase.set_message("OK")
+        responsePhaseHeaders = [
+                ['location', 'http://test:1111/tap/async/' + jobid]
+            ]
+        responsePhase.set_data(method='POST',
+                               context=None,
+                               body="COMPLETED",
+                               headers=responsePhaseHeaders)
+        req = "async/" + jobid + "/phase?PHASE=RUN"
+        connHandler.set_response(req, responsePhase)
+        # Job Phase response
+        jobPhase = DummyResponse()
+        jobPhase.set_status_code(200)
+        jobPhase.set_message("OK")
+        jobPhaseHeaders = [
+                ['location', 'http://test:1111/tap/async/' + jobid]
+            ]
+        jobPhase.set_data(method='GET',
+                          context=None,
+                          body="COMPLETED",
+                          headers=jobPhaseHeaders)
+        req = "async/" + jobid + "/phase"
+        connHandler.set_response(req, jobPhase)
+        # Results response
+        responseResultsJob = DummyResponse()
+        responseResultsJob.set_status_code(200)
+        responseResultsJob.set_message("OK")
+
+        jobDataFile = data_path('job_1.vot')
+        jobData = utils.read_file_content(jobDataFile)
+        responseResultsJob.set_data(method='GET',
+                                    context=None,
+                                    body=jobData,
+                                    headers=None)
+        req = "async/" + jobid + "/results/result"
+        connHandler.set_response(req, responseResultsJob)
+
+
+        job = tap.launch_job_async(query, upload_resource=upload_resource,
+                                   upload_table_name=upload_name)
         assert job is not None, "Expected a valid job"
-        assert job.async_ is False, "Expected a synchronous job"
+        assert job.async_ is True, "Expected an asynchronous job"
         assert job.get_phase() == 'COMPLETED', \
             "Wrong job phase. Expected: %s, found %s" % \
             ('COMPLETED', job.get_phase())
@@ -427,41 +472,6 @@ class TestTapCadc(unittest.TestCase):
         req = "http://test:1111/tap/async/" + str(jobid) + "/redirect"
         connHandler.set_response(req, responseRedirect)
         tap.save_results(job, 'file.txt')
-
-    def test_login(self):
-        connHandler = DummyConnHandlerCadc()
-        tap = TapPlusCadc("http://test:1111/tap", connhandler=connHandler)
-        # Login response
-        responseLogin = DummyResponse()
-        responseLogin.set_status_code(303)
-        responseLogin.set_message("OK")
-        # list of list (httplib implementation for headers in response)
-        responseLoginHeaders = [
-                ['location', 'http://test:1111/tap/login']
-            ]
-        responseLogin.set_data(method='POST',
-                               context=None,
-                               body=None,
-                               headers=responseLoginHeaders)
-        req = "http://www.canfar.phys.uvic.ca/ac/login?" \
-            "password=password&username=username"
-        connHandler.set_response(req, responseLogin)
-        # Login redirect response
-        redirectLogin = DummyResponse()
-        redirectLogin.set_status_code(200)
-        redirectLogin.set_message("OK")
-        redirectLogin.set_data(method='POST',
-                               context=None,
-                               body='encoded cookie',
-                               headers=None)
-        req = "http://test:1111/tap/login?password=password&username=username"
-        connHandler.set_response(req, redirectLogin)
-
-        tap.login(user='username', password='password')
-        assert tap._TapPlus__user == 'username', \
-            "User was not set"
-        assert tap._TapPlus__pwd == 'password', \
-            "Password was not set"
 
     def test_login_cert(self):
         connHandler = DummyConnHandlerCadc()

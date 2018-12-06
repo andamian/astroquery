@@ -10,6 +10,14 @@ from astroquery.cadc.cadctap.tapconn import TapConnCadc
 from astroquery.cadc.cadctap.jobSaxParser import JobSaxParserCadc
 import requests
 import os.path
+from astropy.extern.six.moves.urllib.parse import urlencode
+
+try:
+    # python 3
+    import http.client as httplib
+except ImportError:
+    # python 2
+    import httplib
 
 __all__ = ['TapPlusCadc']
 
@@ -113,8 +121,6 @@ class TapPlusCadc(TapPlus):
             "tapclient": str(TAP_CLIENT_ID),
             "QUERY": str(query),
             "UPLOAD": ""+str(uploadValue)}
-        if name is not None:
-            args['jobname'] = name
         f = open(uploadResource, "r")
         chunk = f.read()
         f.close()
@@ -145,8 +151,6 @@ class TapPlusCadc(TapPlus):
             "FORMAT": str(outputFormat),
             "tapclient": str(TAP_CLIENT_ID),
             "QUERY": str(query)}
-        if name is not None:
-            args['jobname'] = name
         data = self._Tap__connHandler.url_encode(args)
         response = self._Tap__connHandler.execute_post(context, data)
         if verbose:
@@ -317,22 +321,19 @@ class TapPlusCadc(TapPlus):
         args = {
             "username": str(usr),
             "password": str(pwd)}
-        connHandler = self._TapPlus__getconnhandler()
-        location = 'http://www.canfar.phys.uvic.ca/ac/login'
-        data = connHandler.url_encode(args)
-        response = connHandler.execute_post_other(location, data)
+        data = urlencode(args)
+        url = 'http://www.canfar.phys.uvic.ca/ac/login'
+        protocol, host, port, server_context, \
+                tap_context = self._Tap__parseUrl(url)
+        connHandler = httplib.HTTPConnection(host, 80)
+        context='/ac/login'
+        header = {
+            "Content-type": "application/x-www-form-urlencoded",
+            "Accept": "text/plain"
+        }
+        connHandler.request("POST", context, data, header)
+        response = connHandler.getresponse()
         if verbose:
             print(response.status, response.reason)
             print(response.getheaders())
-        numberOfRedirects = 0
-        while (response.status == 303 or response.status == 302) and \
-                numberOfRedirects < 20:
-            loginlocation = connHandler.find_header(
-                response.getheaders(), "location")
-            response = connHandler.execute_post_other(loginlocation, data)
-            numberOfRedirects += 1
-            if verbose:
-                print(response.status, response.reason)
-                print(response.getheaders())
-
         return response
