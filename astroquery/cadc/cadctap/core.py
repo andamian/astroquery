@@ -324,9 +324,9 @@ class TapPlusCadc(TapPlus):
         data = urlencode(args)
         url = 'http://www.canfar.phys.uvic.ca/ac/login'
         protocol, host, port, server_context, \
-                tap_context = self._Tap__parseUrl(url)
+            tap_context = self._Tap__parseUrl(url)
         connHandler = httplib.HTTPConnection(host, 80)
-        context='/ac/login'
+        context = '/ac/login'
         header = {
             "Content-type": "application/x-www-form-urlencoded",
             "Accept": "text/plain"

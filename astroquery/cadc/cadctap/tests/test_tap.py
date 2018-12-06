@@ -202,7 +202,6 @@ class TestTapCadc(unittest.TestCase):
         req = "async/" + jobid + "/results/result"
         connHandler.set_response(req, responseResultsJob)
 
-
         job = tap.launch_job_async(query, upload_resource=upload_resource,
                                    upload_table_name=upload_name)
         assert job is not None, "Expected a valid job"
