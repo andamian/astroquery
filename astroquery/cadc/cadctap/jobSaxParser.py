@@ -35,7 +35,7 @@ class JobSaxParserCadc(JobSaxParser):
     classdocs
     '''
     def __init__(self, async_job=False):
-        super(JobSaxParserCadc, self).__init__(async_job=async_job)
+        JobSaxParser.__init__(self, async_job=async_job)
 
     def _JobSaxParser__check_valid_item_id(self, name):
         for idTmp in VALID_ITEMS:
