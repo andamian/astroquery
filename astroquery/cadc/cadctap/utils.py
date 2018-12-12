@@ -10,6 +10,13 @@ from astropy import units as u
 from astropy.table import Table as APTable
 import six
 
+"""
+Reason for change
+-----------------
+Not an object so can't inherit so had to copy whole
+file in order to change one function
+"""
+
 
 def util_create_string_from_buffer(buffer):
     if six.PY2:
@@ -47,6 +54,12 @@ def read_http_response(response, outputFormat, correct_units=True):
 
 
 def get_suitable_astropy_format(outputFormat):
+    """
+    Reason for change
+    -----------------
+    Translate the right file extension to one astropy
+    would recognize
+    """
     if "csv" == outputFormat:
         return "ascii.csv"
     if "tsv" == outputFormat:

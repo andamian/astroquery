@@ -33,17 +33,30 @@ VALID_ITEMS = [UWS_JOBID, UWS_RUNID, UWS_OWNERID, UWS_PHASE, UWS_QUOTE,
 class JobSaxParserCadc(JobSaxParser):
     '''
     classdocs
+    Reason for change
+    -----------------
+    Return JobCada insteasd of Job object
     '''
     def __init__(self, async_job=False):
         JobSaxParser.__init__(self, async_job=async_job)
 
     def _JobSaxParser__check_valid_item_id(self, name):
+        """
+        Reason for change
+        -----------------
+        It needs to find the UWS_MESSAGE in this VAULID_ITEMS
+        """
         for idTmp in VALID_ITEMS:
             if self._JobSaxParser__check_item_id(idTmp, name):
                 return True
         return False
 
     def startElement(self, name, attrs):
+        """
+        Reason for change
+        -----------------
+        Return a JobCadc object instead of Job object
+        """
         if self._JobSaxParser__check_item_id(UWS_JOBID, name):
             self._JobSaxParser__job = JobCadc(self._JobSaxParser__async)
             self._JobSaxParser__jobs.append(self._JobSaxParser__job)
@@ -56,6 +69,11 @@ class JobSaxParserCadc(JobSaxParser):
             self._JobSaxParser__stop_reading_data()
 
     def _JobSaxParser__populate_job_value(self, value, name):
+        """
+        Reason for change
+        -----------------
+        Add the errmessage when there is an error in the job
+        """
         nameLower = name.lower()
         if UWS_JOBID == nameLower:
             self._JobSaxParser__job.jobid = value

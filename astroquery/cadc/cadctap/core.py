@@ -23,11 +23,16 @@ __all__ = ['TapPlusCadc']
 
 VERSION = "1.0.1"
 TAP_CLIENT_ID = "aqtappy-" + VERSION
+DEFAULT_LOGIN_URL = 'http://www.canfar.phys.uvic.ca/ac/login'
 
 
 class TapPlusCadc(TapPlus):
     """TAP plus class
     Provides TAP and TAP+ capabilities
+    Reason for change
+    -----------------
+    To override some parts of the utils/tap library in order for it to
+    function with the CADC's implementation of TAP
     """
 
     def __init__(self, url=None, host=None, server_context=None,
@@ -56,8 +61,15 @@ class TapPlusCadc(TapPlus):
             new one is created.
         verbose : bool, optional, default 'True'
             flag to display information about the process
+        Reason for change
+        -----------------
+        In order to use the new version of TapConn which is TapConnCadc it
+        had to be passed in at this level instead of being created in the
+        original __init__() which would create the old TapConn
         """
-        if url is not None:
+        if connhandler is not None:
+            connHandler = connhandler
+        elif url is not None:
             protocol, host, port, server_context, \
                 tap_context = self._Tap__parseUrl(url)
             if protocol == "http":
@@ -82,8 +94,6 @@ class TapPlusCadc(TapPlus):
                                       tap_context,
                                       port,
                                       sslport)
-        if connhandler is not None:
-            connHandler = connhandler
         self.__certificate = None
         super(TapPlusCadc, self).__init__(url, host, server_context,
                                           tap_context, port, sslport,
@@ -102,7 +112,8 @@ class TapPlusCadc(TapPlus):
         -------
         A table object
         """
-        print("Retrieving table '"+str(table)+"'")
+        if verbose:
+            print("Retrieving table '"+str(table)+"'")
         tables = self._Tap__load_tables(only_names=False,
                                         include_shared_tables=False,
                                         verbose=verbose)
@@ -113,6 +124,12 @@ class TapPlusCadc(TapPlus):
 
     def _Tap__launchJobMultipart(self, query, uploadResource, uploadTableName,
                                  outputFormat, context, verbose, name=None):
+        """
+        Reason for change
+        -----------------
+        Get rid of PHASE:RUN in args and if async job send PHASE:RUN to
+        async/phase in order to get the job to run
+        """
         uploadValue = str(uploadTableName) + ",param:" + str(uploadTableName)
         args = {
             "REQUEST": "doQuery",
@@ -145,6 +162,12 @@ class TapPlusCadc(TapPlus):
 
     def _Tap__launchJob(self, query, outputFormat,
                         context, verbose, name=None):
+        """
+        Reason for change
+        -----------------
+        Get rid of PHASE:RUN in args and if async job send PHASE:RUN to
+        async/phase in order to get the job to run
+        """
         args = {
             "REQUEST": "doQuery",
             "LANG": "ADQL",
@@ -166,6 +189,11 @@ class TapPlusCadc(TapPlus):
         return response
 
     def __runAsyncQuery(self, jobid, verbose):
+        """
+        Reason for addding
+        ------------------
+        To run the job after it was created
+        """
         args = {
             "PHASE": "RUN"}
         data = self._Tap__connHandler.url_encode(args)
@@ -187,6 +215,11 @@ class TapPlusCadc(TapPlus):
         Returns
         -------
         A Job object
+        Reason for change
+        -----------------
+        In order to output a JobCadc instead of just a Job object, and
+        to add more information to the JobCadc becuase it causes errors
+        when saving if you don't set the format
         """
         if jobid is None:
             if verbose:
@@ -229,11 +262,14 @@ class TapPlusCadc(TapPlus):
             job
         verbose : bool, optional, default 'False'
             flag to display information about the process
+        Reason for change
+        -----------------
+        To send in the filename to the new save_results function in JobCadc
         """
         job.save_results(filename, verbose)
 
     def login(self, user=None, password=None, certificate_file=None,
-              verbose=False):
+              login_url=None, verbose=False):
         """Performs a login.
         User and password can be used or a file that contains user name and
         password
@@ -248,42 +284,53 @@ class TapPlusCadc(TapPlus):
             location of the certificate
         verbose : bool, optional, default 'False'
             flag to display information about the process
+        Reason for change
+        -----------------
+        Add certificates to the login
         """
         if certificate_file is None and user is None:
-            print('Input user/password or certificate file path')
-            self._TapPlus__isLoggedIn = True
+            raise AttributeError(
+                'Input user/password or certificate file path')
             return
         if certificate_file is not None and user is not None:
-            print('Choose one form of authentication only')
+            raise AttributeError(
+                'Choose one form of authentication only')
             return
         if certificate_file is not None:
             if self._TapPlus__getconnhandler().cookies_set():
-                print('Already logged in with user/password')
+                raise AttributeError('Already logged in with user/password')
                 return
             if not os.path.isfile(certificate_file):
-                print('File does not exist - '+certificate_file)
+                raise AttributeError('File does not exist - '+certificate_file)
                 return
             else:
                 self._TapPlus__getconnhandler()._TapConn__connectionHandler. \
                     _ConnectionHandlerCadc__certificate = certificate_file
                 self.__certificate = certificate_file
+                self._TapPlus__isLoggedIn = True
                 return
         if user is not None and password is not None:
             if self.__certificate is not None:
-                print('Already logged in with certificate')
+                raise AttributeError('Already logged in with certificate')
                 return
             self._TapPlus__user = user
             self._TapPlus__pwd = password
-            self.__dologin(verbose)
+            self.__dologin(login_url, verbose)
         else:
             if password is None:
-                print("Invalid password")
+                raise AttributeError("No password")
                 return
 
-    def __dologin(self, verbose=False):
+    def __dologin(self, login_url=None, verbose=False):
+        """
+        Reason for change
+        -----------------
+        Decode and set the cookie with the right key
+        """
         self._TapPlus__isLoggedIn = False
         response = self.__execLogin(self._TapPlus__user,
                                     self._TapPlus__pwd,
+                                    login_url,
                                     verbose)
         # check response
         connHandler = self._TapPlus__getconnhandler()
@@ -291,7 +338,8 @@ class TapPlusCadc(TapPlus):
                                                            verbose,
                                                            200)
         if isError:
-            print("Login error: " + str(response.reason))
+            if verbose:
+                print("Login error: " + str(response.reason))
             raise requests.exceptions.HTTPError(
                 "Login error: " + str(response.reason))
         else:
@@ -309,6 +357,9 @@ class TapPlusCadc(TapPlus):
         ----------
         verbose : bool, optional, default 'False'
             flag to display information about the process
+        Reason for change
+        -----------------
+        Clear the certificate as well
         """
         self._TapPlus__getconnhandler()._TapConn__connectionHandler. \
             _ConnectionHandlerCadc__certificate = None
@@ -317,12 +368,21 @@ class TapPlusCadc(TapPlus):
         self.__certificate = None
         self._TapPlus__isLoggedIn = False
 
-    def __execLogin(self, usr, pwd, verbose=False):
+    def __execLogin(self, usr, pwd, login_url=None, verbose=False):
+        """
+        Reason for change
+        -----------------
+        Send to the right login url, send not using the TapConn object
+        because it redirects instead of giving you a cookie
+        """
         args = {
             "username": str(usr),
             "password": str(pwd)}
         data = urlencode(args)
-        url = 'http://www.canfar.phys.uvic.ca/ac/login'
+        if login_url is None:
+            url = DEFAULT_LOGIN_URL
+        else:
+            url = login_url
         protocol, host, port, server_context, \
             tap_context = self._Tap__parseUrl(url)
         connHandler = httplib.HTTPConnection(host, 80)

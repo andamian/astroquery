@@ -28,6 +28,9 @@ CONTENT_TYPE_POST_DEFAULT = "application/x-www-form-urlencoded"
 class TapConnCadc(TapConn):
     """TAP plus connection class
     Provides low level HTTP connection capabilities
+    Reason for change
+    -----------------
+    Add functions to go to other places
     """
     def __init__(self, ishttps, host, server_context, tap_context=None,
                  port=80, sslport=443, connhandler=None):
@@ -50,6 +53,10 @@ class TapConnCadc(TapConn):
         connhandler connection handler object, optional, default None
             HTTP(s) connection hander (creator). If no handler is provided, a
             new one is created.
+        Reason for change
+        -----------------
+        Make a ConnectionHandlerCadc instead of the original __init__ creating
+        a ConnectionHandler object
         """
         if connhandler is None:
             connhandler = ConnectionHandlerCadc(host,
@@ -74,6 +81,10 @@ class TapConnCadc(TapConn):
         Returns
         -------
         An HTTP response object
+        Reason for adding
+        -----------------
+        Don't add a context onto the host url, send to a completly
+        different url
         """
         conn = self._TapConn__get_connection(verbose)
         context = location
@@ -104,6 +115,10 @@ class TapConnCadc(TapConn):
         Returns
         -------
         An HTTP(s) response object
+        Reason for adding
+        -----------------
+        Don't add a context onto the host url, send to a completly
+        different url
         """
         conn = self._TapConn__get_connection(verbose)
         context = location
@@ -116,6 +131,9 @@ class TapConnCadc(TapConn):
 
     def cookies_set(self):
         """Returns True if the Cookies are in the headers
+        Reason for adding
+        -----------------
+        Check if the cookie is set in the headers
         """
         if 'Cookie' in self._TapConn__postHeaders:
             return True
@@ -133,6 +151,9 @@ class TapConnCadc(TapConn):
         Returns
         -------
         The suitable content-type and the body for the request
+        Reason for change
+        -----------------
+        In boundary use * instead of =, async processor complains if it has =
         """
         timeMillis = int(round(time.time() * 1000))
         boundary = '***%s***' % str(timeMillis)
@@ -164,10 +185,20 @@ class TapConnCadc(TapConn):
 
 class ConnectionHandlerCadc(ConnectionHandler):
     def __init__(self, host, port, sslport):
+        """
+        Reason for change
+        -----------------
+        Add a certificate variable
+        """
         super(ConnectionHandlerCadc, self).__init__(host, port, sslport)
         self.__certificate = None
 
     def get_connection(self, ishttps=False, cookie=None, verbose=False):
+        """
+        Reason for change
+        -----------------
+        If using certificates get secure not if using cookies
+        """
         if (ishttps) or (self.__certificate is not None):
             if verbose:
                 print("------>https")
@@ -179,6 +210,11 @@ class ConnectionHandlerCadc(ConnectionHandler):
                                           self._ConnectionHandler__connPort)
 
     def get_connection_secure(self, verbose):
+        """
+        Reason for change
+        -----------------
+        Add certificate to connection
+        """
         # Prepare the certificate
         context = ssl.create_default_context()
         context.load_cert_chain(self.__certificate)

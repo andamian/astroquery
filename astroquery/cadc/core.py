@@ -220,14 +220,18 @@ class CadcTAP(object):
         return self.__cadctap.save_results(job, filename, verbose)
 
     def login(self, user=None, password=None,
-              certificate_file=None, verbose=False):
+              certificate_file=None, login_url=None, verbose=False):
         """
-        Saves job results
+        Login, set varibles to use for logging in
 
         Parameters
         ----------
-        job : Job, mandatory
-            job
+        user : str, required if certificate is None
+            username to login with
+        password : str, required if user is set
+            password to login with
+        certificate : str, required if user is None
+            path to certificate to use with logging in
         verbose : bool, optional, default 'False'
             flag to display information about the process
         """
@@ -237,6 +241,9 @@ class CadcTAP(object):
                                     verbose=verbose)
 
     def logout(self, verbose=False):
+        """
+        Logout
+        """
         return self.__cadctap.logout(verbose)
 
 

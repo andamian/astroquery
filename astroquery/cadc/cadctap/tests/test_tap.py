@@ -483,7 +483,8 @@ class TestTapCadc(unittest.TestCase):
     def test_login_failure(self):
         connHandler = DummyConnHandlerCadc()
         tap = TapPlusCadc("http://test:1111/tap", connhandler=connHandler)
-        tap.login()
+        with pytest.raises(Exception):
+            tap.login()
         assert tap._TapPlus__user is None, \
             "User was set"
         assert tap._TapPlus__pwd is None, \
@@ -491,8 +492,9 @@ class TestTapCadc(unittest.TestCase):
         assert tap._TapPlusCadc__certificate is None, \
             "Certificate was set"
 
-        tap.login(user='username', password='password',
-                  certificate_file=data_path('cert.pem'))
+        with pytest.raises(Exception):
+            tap.login(user='username', password='password',
+                      certificate_file=data_path('cert.pem'))
         assert tap._TapPlus__user is None, \
             "User was set"
         assert tap._TapPlus__pwd is None, \
@@ -500,18 +502,21 @@ class TestTapCadc(unittest.TestCase):
         assert tap._TapPlusCadc__certificate is None, \
             "Certificate was set"
 
-        tap.login(user='username')
+        with pytest.raises(Exception):
+            tap.login(user='username')
         assert tap._TapPlus__user is None, \
             "User was set"
         assert tap._TapPlus__pwd is None, \
             "Password was set"
 
-        tap.login(certificate_file='notrealfile.txt')
+        with pytest.raises(Exception):
+            tap.login(certificate_file='notrealfile.txt')
         assert tap._TapPlusCadc__certificate is None, \
             "Certificate was set"
 
         tap._TapPlus__getconnhandler().set_cookie('cookie')
-        tap.login(certificate_file=data_path('cert.pem'))
+        with pytest.raises(Exception):
+            tap.login(certificate_file=data_path('cert.pem'))
         assert tap._TapPlusCadc__certificate is None, \
             "Certificate was set"
 

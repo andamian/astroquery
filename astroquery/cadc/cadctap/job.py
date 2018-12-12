@@ -15,7 +15,10 @@ __all__ = ['Job']
 
 
 class JobCadc(Job):
-    """Job class
+    """JobCadc class
+    Reason for change
+    -----------------
+    Job class did not redirect
     """
 
     def __init__(self, async_job, query=None, connhandler=None):
@@ -29,14 +32,17 @@ class JobCadc(Job):
             Query
         connhandler : TapConn, optional, default None
             Connection handler
+        Reason for change
+        -----------------
+        Add errmessage for when a job errors
         """
         super(JobCadc, self).__init__(async_job=async_job,
                                       query=query,
                                       connhandler=connhandler)
         self.errmessage = None
-
+    """
     def get_phase(self, update=False):
-        """Returns the job phase. May optionally update the job's phase.
+        """"""Returns the job phase. May optionally update the job's phase.
 
         Parameters
         ----------
@@ -47,7 +53,7 @@ class JobCadc(Job):
         Returns
         -------
         The job phase
-        """
+        """"""
         if update:
             phase_request = 'async/' + str(self.jobid) + '/phase'
             response = self.connHandler.execute_get(phase_request)
@@ -57,7 +63,7 @@ class JobCadc(Job):
                 raise Exception(response.reason)
             self._Job__phase = str(response.read().decode('utf-8'))
         return self._Job__phase
-
+    """
     def get_results(self, verbose=False):
         """Returns the job results
         This method will block if the job is asynchronous and the job has not
@@ -71,6 +77,9 @@ class JobCadc(Job):
         Returns
         -------
         The job results (astropy.table).
+        Reason for change
+        -----------------
+        Get rid of read from file because if file is wrong it errors badly
         """
         if self.results is not None:
             return self.results
@@ -94,6 +103,10 @@ class JobCadc(Job):
             name of the file to save the output to
         verbose : bool, optional, default 'False'
             flag to display information about the process
+        Reason for change
+        -----------------
+        Add redirects if resutls are in a different place and get right
+        output format for write() and get the response for dump_to_file
         """
         output = filename
         output_format = self.parameters['format']
@@ -144,25 +157,63 @@ class JobCadc(Job):
         ----------
         verbose : bool, optional, default 'False'
             flag to display information about the process
+        Reason for change
+        -----------------
+        Wait less for first few tries then wait longer and
+        send abort if there is a keyboard interrupt
         """
         currentResponse = None
         responseData = None
+        loops = 0
         while True:
-            responseData = self.get_phase(update=True)
-            currentResponse = self._Job__last_phase_response_status
+            try:
+                responseData = self.get_phase(update=True)
+                currentResponse = self._Job__last_phase_response_status
 
-            lphase = responseData.lower().strip()
-            if verbose:
-                print("Job " + self.jobid + " status: " + lphase)
-            if "pending" != lphase and "queued" != lphase and \
-                    "executing" != lphase:
-                break
-            # PENDING, QUEUED, EXECUTING, COMPLETED, ERROR, ABORTED, UNKNOWN,
-            # HELD, SUSPENDED, ARCHIVED:
-            time.sleep(0.5)
+                lphase = responseData.lower().strip()
+                if verbose:
+                    print("Job " + self.jobid + " status: " + lphase)
+                if "pending" != lphase and "queued" != lphase and \
+                        "executing" != lphase:
+                    break
+                # PENDING, QUEUED, EXECUTING, COMPLETED, ERROR, ABORTED,
+                # UNKNOWN, HELD, SUSPENDED, ARCHIVED:
+                if loops < 10:
+                    seconds = 0.5
+                else:
+                    seconds = 30
+                time.sleep(seconds)
+            except KeyboardInterrupt:
+                self.abortJob(verbose)
+                raise
+            loops = loops + 1
         return currentResponse, responseData
 
+    def abortJob(self, verbose):
+        """
+        Reason for addding
+        ------------------
+        Abort the job if keyboard interrupt
+        """
+        print('abbortting')
+        print(self.jobid)
+        args = {
+            "PHASE": "ABORT"}
+        data = self.connHandler.url_encode(args)
+        response = self.connHandler.execute_post(
+            'async/'+str(self.jobid)+'/phase',
+            data)
+        if verbose:
+            print(response.status, response.reason)
+            print(response.getheaders())
+        return
+
     def __load_async_job_results(self, debug=False):
+        """
+        Reason for change
+        -----------------
+        Add getting the error reason and redirect for getting results
+        """
         wjResponse, wjData = self.wait_for_job_end()
         if wjData != 'COMPLETED':
             if wjData == 'ERROR':
