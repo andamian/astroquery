@@ -40,30 +40,7 @@ class JobCadc(Job):
                                       query=query,
                                       connhandler=connhandler)
         self.errmessage = None
-    """
-    def get_phase(self, update=False):
-        """"""Returns the job phase. May optionally update the job's phase.
 
-        Parameters
-        ----------
-        update : bool
-            if True, the phase will by updated by querying the server before
-            returning.
-
-        Returns
-        -------
-        The job phase
-        """"""
-        if update:
-            phase_request = 'async/' + str(self.jobid) + '/phase'
-            response = self.connHandler.execute_get(phase_request)
-
-            self._Job__last_phase_response_status = response.status
-            if response.status != 200:
-                raise Exception(response.reason)
-            self._Job__phase = str(response.read().decode('utf-8'))
-        return self._Job__phase
-    """
     def get_results(self, verbose=False):
         """Returns the job results
         This method will block if the job is asynchronous and the job has not
@@ -106,7 +83,7 @@ class JobCadc(Job):
         Reason for change
         -----------------
         Add redirects if resutls are in a different place and get right
-        output format for write() and get the response for dump_to_file
+        output format for write()
         """
         output = filename
         output_format = self.parameters['format']
@@ -130,24 +107,7 @@ class JobCadc(Job):
                     print(response.status, response.reason)
                     print(response.getheaders())
 
-                numberOfRedirects = 0
-                while (response.status == 303 or response.status == 302) and \
-                        numberOfRedirects < 20:
-                    joblocation = self.connHandler.find_header(
-                        response.getheaders(), "location")
-                    response = self.connHandler.execute_get_other(joblocation)
-                    numberOfRedirects += 1
-                    if verbose:
-                        print(response.status, response.reason)
-                        print(response.getheaders())
-                isError = self.connHandler.check_launch_response_status(
-                    response,
-                    verbose,
-                    200)
-                if isError:
-                    if verbose:
-                        print(response.reason)
-                    raise Exception(response.reason)
+                response = self.redirectJob(response, verbose)
                 self.connHandler.dump_to_file(output, response)
 
     def wait_for_job_end(self, verbose=False):
@@ -235,7 +195,13 @@ class JobCadc(Job):
         if debug:
             print(resultsResponse.status, resultsResponse.reason)
             print(resultsResponse.getheaders())
+        resultsResponse = self.redirectJob(resultsResponse, debug)
+        outputFormat = self.parameters['format']
+        results = utils.read_http_response(resultsResponse, outputFormat)
+        self.set_results(results)
+        self._Job__phase = wjData
 
+    def redirectJob(self, resultsResponse, verbose=False):
         numberOfRedirects = 0
         while (resultsResponse.status == 303 or resultsResponse.status == 302)\
                 and numberOfRedirects < 20:
@@ -244,20 +210,17 @@ class JobCadc(Job):
                 "location")
             resultsResponse = self.connHandler.execute_get_other(joblocation)
             numberOfRedirects += 1
-            if debug:
+            if verbose:
                 print(resultsResponse.status, resultsResponse.reason)
                 print(resultsResponse.getheaders())
 
         isError = self.connHandler.check_launch_response_status(
             resultsResponse,
-            debug,
+            verbose,
             200)
         if isError:
-            if debug:
+            if verbose:
                 print(resultsResponse.reason)
             raise Exception(resultsResponse.reason)
         else:
-            outputFormat = self.parameters['format']
-            results = utils.read_http_response(resultsResponse, outputFormat)
-            self.set_results(results)
-            self._Job__phase = wjData
+            return resultsResponse
