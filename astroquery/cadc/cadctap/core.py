@@ -24,6 +24,7 @@ __all__ = ['TapPlusCadc']
 VERSION = "1.0.1"
 TAP_CLIENT_ID = "aqtappy-" + VERSION
 DEFAULT_LOGIN_URL = 'http://www.canfar.phys.uvic.ca/ac/login'
+DEFAULT_COOKIE_PREFIX = 'CADC_SSO='
 
 
 class TapPlusCadc(TapPlus):
@@ -269,7 +270,7 @@ class TapPlusCadc(TapPlus):
         job.save_results(filename, verbose)
 
     def login(self, user=None, password=None, certificate_file=None,
-              login_url=None, verbose=False):
+              cookie_prefix=None, login_url=None, verbose=False):
         """Performs a login.
         User and password can be used or a file that contains user name and
         password
@@ -315,13 +316,14 @@ class TapPlusCadc(TapPlus):
                 return
             self._TapPlus__user = user
             self._TapPlus__pwd = password
-            self.__dologin(login_url, verbose)
+            self.__dologin(cookie_prefix=cookie_prefix,
+                           login_url=login_url, verbose=verbose)
         else:
             if password is None:
                 raise AttributeError("No password")
                 return
 
-    def __dologin(self, login_url=None, verbose=False):
+    def __dologin(self, cookie_prefix=None, login_url=None, verbose=False):
         """
         Reason for change
         -----------------
@@ -346,7 +348,11 @@ class TapPlusCadc(TapPlus):
             # extract cookie
             cookie = response.read()
             c = cookie.decode()
-            cookie = 'CADC_SSO=' + c
+            if cookie_prefix is None:
+                prefix = DEFAULT_COOKIE_PREFIX
+            else:
+                prefix = cookie_prefix
+            cookie = prefix + c
             if cookie is not None:
                 self._TapPlus__isLoggedIn = True
                 connHandler.set_cookie(cookie)

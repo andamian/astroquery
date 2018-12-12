@@ -222,8 +222,8 @@ class CadcTAP(object):
         """
         return self.__cadctap.save_results(job, filename, verbose)
 
-    def login(self, user=None, password=None,
-              certificate_file=None, login_url=None, verbose=False):
+    def login(self, user=None, password=None, certificate_file=None,
+              cookie_prefix=None, login_url=None, verbose=False):
         """
         Login, set varibles to use for logging in
 
@@ -241,6 +241,8 @@ class CadcTAP(object):
 
         return self.__cadctap.login(user=user, password=password,
                                     certificate_file=certificate_file,
+                                    cookie_prefix=cookie_prefix,
+                                    login_url=login_url,
                                     verbose=verbose)
 
     def logout(self, verbose=False):

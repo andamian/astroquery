@@ -150,21 +150,27 @@ class TestTap(unittest.TestCase):
         user = 'user'
         password = 'password'
         cert = 'cert'
+        cookie = 'cookie'
+        login = 'http://login.com/login'
         # default parameters
         parameters = {}
         parameters['user'] = None
         parameters['password'] = None
         parameters['certificate_file'] = None
+        parameters['cookie_prefix'] = None
+        parameters['login_url'] = None
         parameters['verbose'] = False
-        tap.login(None, None, None)
+        tap.login(None, None, None, None, None, False)
         dummyTapHandler.check_call('login', parameters)
         # test with parameters
         dummyTapHandler.reset()
         parameters['user'] = user
         parameters['password'] = password
         parameters['certificate_file'] = cert
+        parameters['cookie_prefix'] = cookie
+        parameters['login_url'] = login
         parameters['verbose'] = True
-        tap.login(user, password, cert, verbose=True)
+        tap.login(user, password, cert, cookie, login, verbose=True)
         dummyTapHandler.check_call('login', parameters)
 
     def test_logout(self):

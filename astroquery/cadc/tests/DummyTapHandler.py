@@ -104,11 +104,14 @@ class DummyTapHandler(object):
         self.__parameters['verbose'] = verbose
         return None
 
-    def login(self, user, password, certificate_file, verbose=False):
+    def login(self, user, password, certificate_file, cookie_prefix=None,
+              login_url=None, verbose=False):
         self.__invokedMethod = 'login'
         self.__parameters['user'] = user
         self.__parameters['password'] = password
         self.__parameters['certificate_file'] = certificate_file
+        self.__parameters['cookie_prefix'] = cookie_prefix
+        self.__parameters['login_url'] = login_url
         self.__parameters['verbose'] = verbose
         return None
 
