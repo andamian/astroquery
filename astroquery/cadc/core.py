@@ -37,6 +37,9 @@ class CadcTAP(object):
         -------
         CadcTAP object
         """
+        if url is not None and tap_plus_handler is not None:
+            raise AttributeError('Can not input both url and tap handler')
+
         if tap_plus_handler is None:
             if url is None:
                 self.__cadctap = TapPlusCadc(
