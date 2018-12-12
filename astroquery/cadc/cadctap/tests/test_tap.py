@@ -2,6 +2,7 @@
 
 import unittest
 import os
+import tempfile
 import numpy as np
 import pytest
 
@@ -475,14 +476,21 @@ class TestTapCadc(unittest.TestCase):
     def test_login_cert(self):
         connHandler = DummyConnHandlerCadc()
         tap = TapPlusCadc("http://test:1111/tap", connhandler=connHandler)
-        tap.login(certificate_file=data_path('cert.pem'))
+
+        fd, path = tempfile.mkstemp()
+
+        tap.login(certificate_file=path)
         assert tap._TapPlus__getconnhandler()._TapConn__connectionHandler. \
-            _ConnectionHandlerCadc__certificate == data_path('cert.pem'), \
+            _ConnectionHandlerCadc__certificate == path, \
             "Certificate was not set"
+        os.remove(path)
 
     def test_login_failure(self):
         connHandler = DummyConnHandlerCadc()
         tap = TapPlusCadc("http://test:1111/tap", connhandler=connHandler)
+
+        fd, path = tempfile.mkstemp()
+
         with pytest.raises(Exception):
             tap.login()
         assert tap._TapPlus__user is None, \
@@ -494,7 +502,7 @@ class TestTapCadc(unittest.TestCase):
 
         with pytest.raises(Exception):
             tap.login(user='username', password='password',
-                      certificate_file=data_path('cert.pem'))
+                      certificate_file=path)
         assert tap._TapPlus__user is None, \
             "User was set"
         assert tap._TapPlus__pwd is None, \
@@ -516,9 +524,10 @@ class TestTapCadc(unittest.TestCase):
 
         tap._TapPlus__getconnhandler().set_cookie('cookie')
         with pytest.raises(Exception):
-            tap.login(certificate_file=data_path('cert.pem'))
+            tap.login(certificate_file=path)
         assert tap._TapPlusCadc__certificate is None, \
             "Certificate was set"
+        os.remove(path)
 
     def test_logout(self):
         connHandler = DummyConnHandlerCadc()
