@@ -35,7 +35,7 @@ class JobSaxParserCadc(JobSaxParser):
     classdocs
     Reason for change
     -----------------
-    Return JobCada insteasd of Job object
+    Return JobCadc insteasd of Job object
     '''
     def __init__(self, async_job=False):
         JobSaxParser.__init__(self, async_job=async_job)

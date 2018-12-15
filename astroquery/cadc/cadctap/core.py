@@ -66,7 +66,8 @@ class TapPlusCadc(TapPlus):
         -----------------
         In order to use the new version of TapConn which is TapConnCadc it
         had to be passed in at this level instead of being created in the
-        original __init__() which would create the old TapConn
+        original __init__() which would create the old TapConn. TapConnCadc
+        does redirects and uses certificates.
         """
         if connhandler is not None:
             connHandler = connhandler
@@ -112,7 +113,12 @@ class TapPlusCadc(TapPlus):
         Returns
         -------
         A table object
+        Reason for change
+        -----------------
+        TAP load table sends parameter '?table=tablename' to the /tables url
+        but this isn't available for all implementations
         """
+        print('in load ', table)
         if verbose:
             print("Retrieving table '"+str(table)+"'")
         tables = self._Tap__load_tables(only_names=False,

@@ -139,7 +139,7 @@ class JobCadc(Job):
                 # PENDING, QUEUED, EXECUTING, COMPLETED, ERROR, ABORTED,
                 # UNKNOWN, HELD, SUSPENDED, ARCHIVED:
                 if loops < 10:
-                    seconds = 0.5
+                    seconds = 1
                 else:
                     seconds = 30
                 time.sleep(seconds)
