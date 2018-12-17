@@ -74,7 +74,7 @@ Examples
 1.1. Get tables
 ~~~~~~~~~~~~~~~~~
 
-To get tables
+To get list of table objects
 
 .. code-block:: python
 
@@ -114,7 +114,7 @@ To get tables
 1.2. Get table
 ~~~~~~~~~~~~~~~~
 
-To get a single table
+To get a single table object
 
 .. code-block:: python
 
@@ -226,8 +226,8 @@ Query saving results in a file:
   >>> job = Cadc.run_query("SELECT TOP 10 observationID, obsID FROM caom2.Observation AS Observation", 'sync',
   >>>                      output_file='test_output_noauth.tsv', output_format='tsv')
 
-1.5 Synchronous query on an 'on-the-fly' uploaded table
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1.5 Synchronous query with temporary uploaded table
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A table can be uploaded to the server in order to be used in a query.
 
@@ -329,6 +329,46 @@ Query saving results in a file:
   Length = 1720713 rows
 
 
+1.7 Load job
+~~~~~~~~~~~~~~~~~~~~~~
+
+Asynchronous jobs can be loaded. You need the jobid in order to load the job.
+
+
+.. code-block:: python
+
+  >>> from astroquery.cadc import Cadc
+  >>>
+  >>> job=Cadc.load_async_job(jobid='ichozdcz23g5r20f')
+  >>> print(job.get_results())
+
+          observationID          ...            caomObservationURI           
+  ------------------------------ ... ----------------------------------------
+                        m1030610 ...                       caom:FUSE/m1030610
+    myc03@930813_093655_ukt_0129 ...   caom:JCMT/myc03@930813_093655_ukt_0129
+  m99bu22@000130_165639_das_0112 ... caom:JCMT/m99bu22@000130_165639_das_0112
+  m95an03@950515_134612_das_0447 ... caom:JCMT/m95an03@950515_134612_das_0447
+    myc03@930813_093836_ukt_0130 ...   caom:JCMT/myc03@930813_093836_ukt_0130
+  m99bu22@000130_170940_cbe_0113 ... caom:JCMT/m99bu22@000130_170940_cbe_0113
+  m95an03@950515_135307_cbe_0448 ... caom:JCMT/m95an03@950515_135307_cbe_0448
+    myc03@930813_093951_ukt_0131 ...   caom:JCMT/myc03@930813_093951_ukt_0131
+  m99bu22@000130_171325_cbe_0114 ... caom:JCMT/m99bu22@000130_171325_cbe_0114
+  m95an03@950515_135732_das_0449 ... caom:JCMT/m95an03@950515_135732_das_0449
+                             ... ...                                      ...
+    myc03@930813_095216_ukt_0138 ...   caom:JCMT/myc03@930813_095216_ukt_0138
+  m99bu22@000202_211750_cbe_0120 ... caom:JCMT/m99bu22@000202_211750_cbe_0120
+  m95an03@950515_152820_das_0456 ... caom:JCMT/m95an03@950515_152820_das_0456
+  m99bu22@000202_212023_cbe_0121 ... caom:JCMT/m99bu22@000202_212023_cbe_0121
+    myc03@930813_095327_ukt_0139 ...   caom:JCMT/myc03@930813_095327_ukt_0139
+  m95an03@950515_154550_cbe_0457 ... caom:JCMT/m95an03@950515_154550_cbe_0457
+    myc03@930813_095438_ukt_0140 ...   caom:JCMT/myc03@930813_095438_ukt_0140
+  m99bu22@000202_212602_das_0122 ... caom:JCMT/m99bu22@000202_212602_das_0122
+  m99bu22@991127_135008_cbe_0001 ... caom:JCMT/m99bu22@991127_135008_cbe_0001
+    myc03@930813_095654_ukt_0141 ...   caom:JCMT/myc03@930813_095654_ukt_0141
+  m95an03@950515_155031_das_0458 ... caom:JCMT/m95an03@950515_155031_das_0458
+  Length = 50 rows
+
+
 ---------------------------
 2. Authenticated access
 ---------------------------
@@ -341,7 +381,7 @@ All previous methods (``get_tables``, ``get_table``, ``run_query``) explained fo
 non authenticated users are applicable for authenticated ones.
 
 
-2.1. Login/Logout
+2.1 Login/Logout
 ~~~~~~~~~~~~~~~~~
 
 Login with username and password
@@ -367,6 +407,52 @@ To perform a logout
 
   >>> from astroquery.cadc import Cadc
   >>> Cadc.logout()
+
+2.2 List asynchronous jobs
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+List all asynchronous jobs the user has created. Must be logged in in order to know whose jobs to get.
+
+.. code-block:: python
+
+  >>> from astroquery.cadc import Cadc
+  >>>
+  >>> Cadc.login(user=user, password=password)
+  >>> job_list=Cadc.list_async_jobs()
+  >>> for job in job_list:
+  >>>   print(job.jobid)
+
+  a07ow6t1iz0g6t9i
+  a08eohn7nv26a9co
+  a0bgkjy2dxglk9et
+  a20nk3ipdfnhfwon
+  a2j1uzuq539k0juw
+  a2p9ptit64eo6a60
+  a2quy2vhy2jcf7vd
+  a2rhhclcf5jrvki6
+  a3ndlvrgwiyxh725
+  a4ifu7jd90ikg4n9
+  a4mx6zsetzrusa77
+  a5m4s8iv63adnvqv
+  a67b6m0plmzrc6lh
+  a6986enjq841jpmf
+  a6utdlldgm7r3wdk
+  a7ql0xabjywp4gb1
+  a8l4p7wjfe5sj5qh
+  a8lwo6yx7lhlw3fc
+  a9ompdxms2ym6s6e
+  aa2hcryt8opz6n8w
+  aaekwjipwt5ts00d
+  abo34amxg89swk82
+  ac1zko0xzyipw8jh
+  acwqcbis6c61kdqb
+  aczrbnw5cqghsed5
+  adh8errtdud1c4zf
+  adkxjhdtjhysg95j
+  af35uk819cuzsknu
+  afg2fn2k11fdxk0k
+  afqwdvyfhtkoty1
+  ...
 
 
 Reference/API
