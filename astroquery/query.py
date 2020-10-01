@@ -327,7 +327,6 @@ class BaseQuery(object):
             if (now - datetime.fromtimestamp(mktime(date))).seconds > 600:
                 #  10min is used to take into account local clock inconsistency
                 stale = False
-        print('********Stale: {}'.format(stale))
 
         if ((os.path.exists(local_filepath)
              and ('Accept-Ranges' in response.headers)
@@ -343,7 +342,7 @@ class BaseQuery(object):
             elif existing_file_length == 0:
                 open_mode = 'wb'
             else:
-                print("Continuing download of file {0}, with {1} bytes to "
+                log.info("Continuing download of file {0}, with {1} bytes to "
                          "go ({2}%)".format(local_filepath,
                                             length - existing_file_length,
                                             (length-existing_file_length)/length*100))
@@ -363,14 +362,14 @@ class BaseQuery(object):
             if length is not None:
                 statinfo = os.stat(local_filepath)
                 if statinfo.st_size != length or stale:
-                    log.warning("Found outdated cached (file {0}, size {1}, "
+                    log.warning("Found outdated cache (file {0}, size {1}, "
                                 "expected size {2}, stale {3})"
                                 .format(local_filepath,
                                         statinfo.st_size,
                                         length, stale))
                     open_mode = 'wb'
                 else:
-                    print("Found cached file {0} with expected size {1}."
+                    log.info("Found cached file {0} with expected size {1}."
                              .format(local_filepath, statinfo.st_size))
                     response.close()
                     return
@@ -378,7 +377,7 @@ class BaseQuery(object):
                 open_mode = 'wb'
             else:
                 # TODO shouldn't it err on the safe side?
-                print("Found cached file {0}.".format(local_filepath))
+                log.info("Found cached file {0}.".format(local_filepath))
                 response.close()
                 return
         else:
@@ -406,7 +405,6 @@ class BaseQuery(object):
             with open(local_filepath, open_mode) as f:
                 for block in response.iter_content(blocksize):
                     f.write(block)
-                    print('*** Wrote block')
                     bytes_read += len(block)
                     if length is not None:
                         pb.update(bytes_read if bytes_read <= length else

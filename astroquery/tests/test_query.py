@@ -71,15 +71,17 @@ def test_stale():
 
     # second call
     get_response.iter_content.reset_mock()
+    get_response.iter_content.return_value = iter([buffer1, buffer2])
     bq._request('GET', 'https://some.url/{}'.format(filename), save=True,
                 savedir=dest_dir.name)
     assert os.path.isfile(file)
-    #assert os.stat(file).st_mtime > file_timestamp
+    assert os.stat(file).st_mtime > file_timestamp
     file_timestamp = os.stat(file).st_mtime
     get_response.iter_content.assert_called()
 
     # Introduce content length header. Sizes are the same but there is no
     # date info so a download occurs
+    get_response.iter_content.reset_mock()
     get_response.headers = {'content-length': len(buffer1) + len(buffer2)}
     get_response.iter_content.return_value = iter([buffer1, buffer2])
     bq._request('GET', 'https://some.url/{}'.format(filename), save=True,
