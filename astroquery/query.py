@@ -364,7 +364,7 @@ class BaseQuery(object):
                 statinfo = os.stat(local_filepath)
                 if statinfo.st_size != length or stale:
                     log.warning("Found outdated cached (file {0}, size {1}, "
-                                "expected size {2}, stale)"
+                                "expected size {2}, stale {3})"
                                 .format(local_filepath,
                                         statinfo.st_size,
                                         length, stale))
