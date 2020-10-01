@@ -343,7 +343,7 @@ class BaseQuery(object):
             elif existing_file_length == 0:
                 open_mode = 'wb'
             else:
-                log.info("Continuing download of file {0}, with {1} bytes to "
+                print("Continuing download of file {0}, with {1} bytes to "
                          "go ({2}%)".format(local_filepath,
                                             length - existing_file_length,
                                             (length-existing_file_length)/length*100))
@@ -370,7 +370,7 @@ class BaseQuery(object):
                                         length, stale))
                     open_mode = 'wb'
                 else:
-                    log.info("Found cached file {0} with expected size {1}."
+                    print("Found cached file {0} with expected size {1}."
                              .format(local_filepath, statinfo.st_size))
                     response.close()
                     return
@@ -378,7 +378,7 @@ class BaseQuery(object):
                 open_mode = 'wb'
             else:
                 # TODO shouldn't it err on the safe side?
-                log.info("Found cached file {0}.".format(local_filepath))
+                print("Found cached file {0}.".format(local_filepath))
                 response.close()
                 return
         else:
