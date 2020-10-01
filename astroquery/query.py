@@ -327,7 +327,6 @@ class BaseQuery(object):
             if (now - datetime.fromtimestamp(mktime(date))).seconds > 600:
                 #  10min is used to take into account local clock inconsistency
                 stale = False
-        print('*****Stale: {}'.format(stale))
 
         if ((os.path.exists(local_filepath)
              and ('Accept-Ranges' in response.headers)
@@ -404,10 +403,8 @@ class BaseQuery(object):
                          .format(url, local_filepath)),
                 file=progress_stream) as pb:
             with open(local_filepath, open_mode) as f:
-                print('*****In open')
                 for block in response.iter_content(blocksize):
                     f.write(block)
-                    print('*****Wrote')
                     bytes_read += len(block)
                     if length is not None:
                         pb.update(bytes_read if bytes_read <= length else

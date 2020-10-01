@@ -56,7 +56,7 @@ def test_stale():
     filename = 'test.txt'
     file = os.path.join(dest_dir.name, filename)
     buffer1 = b'This is ..'
-    buffer2 = b' just a test'
+    buffer2 = b' just a test1'
 
     # response contains no size or date headers. Local file is updated
     # every single time
@@ -66,61 +66,65 @@ def test_stale():
     bq._request('GET', 'https://some.url/{}'.format(filename), save=True,
                 savedir=dest_dir.name)
     assert os.path.isfile(file)
-    file_timestamp = os.stat(file).st_mtime
     get_response.iter_content.assert_called()
+    assert buffer2.decode('utf-8') in open(file).read()
 
-    # second call
+    # second call. To make sure file is updated, just modify a character
+    # so size stays the same
     get_response.iter_content.reset_mock()
+    buffer2 = b' just a test2'
     get_response.iter_content.return_value = iter([buffer1, buffer2])
     bq._request('GET', 'https://some.url/{}'.format(filename), save=True,
                 savedir=dest_dir.name)
     assert os.path.isfile(file)
-    assert os.stat(file).st_mtime > file_timestamp
-    file_timestamp = os.stat(file).st_mtime
     get_response.iter_content.assert_called()
+    assert buffer2.decode('utf-8') in open(file).read()
 
     # Introduce content length header. Sizes are the same but there is no
     # date info so a download occurs
     get_response.iter_content.reset_mock()
+    buffer2 = b' just a test3'
     get_response.headers = {'content-length': len(buffer1) + len(buffer2)}
     get_response.iter_content.return_value = iter([buffer1, buffer2])
     bq._request('GET', 'https://some.url/{}'.format(filename), save=True,
                 savedir=dest_dir.name)
     assert os.path.isfile(file)
-    file_timestamp = os.stat(file).st_mtime
+    assert buffer2.decode('utf-8') in open(file).read()
     get_response.iter_content.assert_called()
 
     # Local copy is considered stalled because there's no Date header
     get_response.iter_content.reset_mock()
+    buffer2 = b' just a test4'
     get_response.iter_content.return_value = iter([buffer1, buffer2])
     bq._request('GET', 'https://some.url/{}'.format(filename), save=True,
                 savedir=dest_dir.name)
     assert os.path.isfile(file)
+    assert buffer2.decode('utf-8') in open(file).read()
     get_response.iter_content.assert_called()
-    assert os.stat(file).st_mtime > file_timestamp
 
     # Local copy is considered stalled because the file timestamp
     # is too close to the original.
     get_response.iter_content.reset_mock()
     get_response.headers['Date'] = eut.format_datetime(utcnow)
+    buffer2 = b' just a test5'
     get_response.iter_content.return_value = iter([buffer1, buffer2])
     bq._request('GET', 'https://some.url/{}'.format(filename), save=True,
                 savedir=dest_dir.name)
     assert os.path.isfile(file)
+    assert buffer2.decode('utf-8') in open(file).read()
     get_response.iter_content.assert_called()
-    assert os.stat(file).st_mtime > file_timestamp
-    file_timestamp = os.stat(file).st_mtime
 
     # Local copy is considered up-to-date because Date is in the past
     get_response.iter_content.reset_mock()
     get_response.headers['Date'] = 'Tue, 29 Sep 2020 17:00:00 GMT'
+    buffer2 = b' just a test6'
     get_response.iter_content.return_value = iter([buffer1, buffer2])
     bq._request('GET', 'https://some.url/{}'.format(filename), save=True,
                 savedir=dest_dir.name)
     assert os.path.isfile(file)
+    assert buffer2.decode('utf-8') not in open(file).read()
+    assert 'test5' in open(file).read()
     get_response.iter_content.assert_not_called()
-    assert os.stat(file).st_mtime == file_timestamp  # file not downloaded
-    file_timestamp = os.stat(file).st_mtime
 
     # Update size now which should trigger an update
     get_response.iter_content.reset_mock()
@@ -130,8 +134,8 @@ def test_stale():
     bq._request('GET', 'https://some.url/{}'.format(filename), save=True,
                 savedir=dest_dir.name)
     assert os.path.isfile(file)
+    assert buffer2.decode('utf-8') in open(file).read()
     get_response.iter_content.assert_called()
-    assert os.stat(file).st_mtime > file_timestamp
     assert os.stat(file).st_size == get_response.headers['content-length']
 
 
