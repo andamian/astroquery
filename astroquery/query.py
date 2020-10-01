@@ -327,6 +327,7 @@ class BaseQuery(object):
             if (now - datetime.fromtimestamp(mktime(date))).seconds > 600:
                 #  10min is used to take into account local clock inconsistency
                 stale = False
+        print('********Stale: {}'.format(stale))
 
         if ((os.path.exists(local_filepath)
              and ('Accept-Ranges' in response.headers)
